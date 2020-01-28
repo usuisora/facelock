@@ -1,13 +1,14 @@
 import React from 'react';
 import './App.css';
-import Webcam from './components/Webcam'
-
+import CameraFactory from './components/CameraFactory'
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-       Cam
-       <Webcam/>
+       <h1>Cams</h1>
+        <CameraFactory/>
+      
+
       </header>
     </div>
   );
