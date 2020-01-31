@@ -7,11 +7,11 @@ async function getCamsIds() {
 	return camIds;
 }
 
-export default function CameraFactory() {
+export default function CameraFactory({ config }) {
 	const [ camIds, setCamIds ] = useState(null);
 	useEffect(() => {
 		getCamsIds().then((ids) => setCamIds(ids));
 	}, []);
-	const cams = camIds ? camIds.map((deviceId) => <Camera camId={deviceId} />) : <h1>....</h1>;
-	return cams;
+	const cams = camIds ? camIds.map((deviceId) => <Camera camId={deviceId} ratio={config.ratio} />) : <h1>....</h1>;
+	return <div class="camFactory">{cams}</div>;
 }

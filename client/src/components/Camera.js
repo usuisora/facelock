@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as faceapi from 'face-api.js';
+import Info from './Info';
 
-export default function Camera({ camId }) {
+export default function Camera({ camId, ratio }) {
 	const [ mediaStream, setMediaStream ] = useState(null);
 	const videoRef = useRef();
 	const canvasPicWebCam = useRef();
@@ -64,6 +65,7 @@ export default function Camera({ camId }) {
 			faceapi.draw.drawDetections(canvas, resizedDetections);
 			faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
 			faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+			// setApiIsLoaded(true);
 		}, 100);
 	}
 
@@ -72,15 +74,16 @@ export default function Camera({ camId }) {
 			<video
 				id={camId}
 				ref={videoRef}
-				width="720"
-				height="560"
+				width={ratio.width}
+				height={ratio.height}
 				onPlay={handlePlay}
 				onCanPlay={handleCanPlay}
 				autoPlay
 				playsInline
 				muted
 			/>
-			<canvas ref={canvasPicWebCam} width={350} height={350} />
+			<canvas ref={canvasPicWebCam} />
+			<Info />
 		</div>
 	);
 }
