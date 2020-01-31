@@ -1,17 +1,13 @@
-import React from 'react';
-import './App.css';
-import CameraFactory from './components/CameraFactory'
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-       <h1>Cams</h1>
-        <CameraFactory/>
-      
+import React, { useEffect, useRef, useState } from 'react';
+import CameraFactory from './components/CameraFactory';
 
-      </header>
-    </div>
-  );
+function App() {
+	return (
+		<div className="App">
+			<h1>Cams</h1>
+			<CameraFactory />
+		</div>
+	);
 }
 
 export default App;
