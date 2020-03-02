@@ -20,7 +20,7 @@ body {
 	position: relative !important;
 	display: flex;
 	flex-direction: column;
-	margin: 0 20px;
+	margin: 0 20px 10px;
 }
 .info {
 	background-color: #333;

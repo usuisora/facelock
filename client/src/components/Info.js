@@ -2,9 +2,9 @@ import React from 'react';
 
 export default function Info() {
 	return (
-		<div class="info">
+		<div className="info">
 			<h3>Cam#...</h3>
-			<p class="red">Restricted</p>
+			<p className="red">Restricted</p>
 			<ul>
 				<li>Room: 12</li>
 				<li>door: 1 </li>

@@ -34,6 +34,7 @@ export default function Camera({ camId, ratio }) {
 				return function cleanup() {
 					mediaStream.getTracks().forEach((track) => {
 						track.stop();
+						console.log('clean up');
 					});
 				};
 			}
@@ -50,9 +51,7 @@ export default function Camera({ camId, ratio }) {
 	}
 
 	function handlePlay() {
-		console.log(videoRef.current.width);
 		const canvas = canvasPicWebCam.current;
-
 		const displaySize = { width: videoRef.current.width, height: videoRef.current.height };
 		faceapi.matchDimensions(canvas, displaySize);
 		setInterval(async () => {
@@ -70,7 +69,7 @@ export default function Camera({ camId, ratio }) {
 	}
 
 	return (
-		<div class="camera">
+		<div className="camera">
 			<video
 				id={camId}
 				ref={videoRef}

@@ -12,6 +12,10 @@ export default function CameraFactory({ config }) {
 	useEffect(() => {
 		getCamsIds().then((ids) => setCamIds(ids));
 	}, []);
-	const cams = camIds ? camIds.map((deviceId) => <Camera camId={deviceId} ratio={config.ratio} />) : <h1>....</h1>;
-	return <div class="camFactory">{cams}</div>;
+	const cams = camIds ? (
+		camIds.map((deviceId) => <Camera key={deviceId} camId={deviceId} ratio={config.ratio} />)
+	) : (
+		<h1>....</h1>
+	);
+	return <div className="camFactory">{cams}</div>;
 }
