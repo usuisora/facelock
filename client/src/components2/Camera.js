@@ -14,31 +14,23 @@ export default function Camera({ camId, ratio }) {
 	// ref to HTML element to show videodata
 	const canvasPicWebCam = useRef();
 
+	async function enableStream() {
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: {
+					deviceId: { exact: camId }
+				}
+			});
+			setMediaStream(stream);
+		} catch (err) {
+			// Removed for brevity
+		}
+	}
 	// setting stream for output before render
 	useEffect(
 		() => {
-			console.log('update complexity +1 ');
-			async function enableStream() {
-				try {
-					const stream = await navigator.mediaDevices.getUserMedia({
-						video: {
-							deviceId: { exact: camId }
-						}
-					});
-					setMediaStream(stream);
-				} catch (err) {
-					// Removed for brevity
-				}
-			}
-
 			if (!mediaStream) {
-				Promise.all([
-					// faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
-					faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-					faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-					faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-					faceapi.nets.faceExpressionNet.loadFromUri('/models')
-				]).then(enableStream(), (err) => console.log('rejected'));
+				enableStream();
 			} else {
 				return function cleanup() {
 					mediaStream.getTracks().forEach((track) => {
@@ -56,10 +48,6 @@ export default function Camera({ camId, ratio }) {
 		videoRef.current.srcObject = mediaStream;
 	}
 
-	// function handleCanPlay() {
-	// 	videoRef.current.play();
-	// }
-
 	function handlePlay() {
 		const canvas = canvasPicWebCam.current;
 		const displaySize = { width: videoRef.current.width, height: videoRef.current.height };
@@ -73,7 +61,7 @@ export default function Camera({ camId, ratio }) {
 			faceapi.draw.drawDetections(canvas, resizedDetections);
 			// faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
 			// faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
-		}, 300);
+		}, 100);
 	}
 
 	//render
