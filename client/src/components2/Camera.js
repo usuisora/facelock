@@ -5,13 +5,9 @@ import Info from './Info';
 // Camera object
 // Represent a display of one of video inputs
 export default function Camera({ camId, ratio }) {
-	// video data to output
 	const [ mediaStream, setMediaStream ] = useState(null);
-
-	// ref to HTML element to show videodata
+	// ref to HTML elements
 	const videoRef = useRef();
-
-	// ref to HTML element to show videodata
 	const canvasPicWebCam = useRef();
 
 	async function enableStream() {
@@ -22,9 +18,7 @@ export default function Camera({ camId, ratio }) {
 				}
 			});
 			setMediaStream(stream);
-		} catch (err) {
-			// Removed for brevity
-		}
+		} catch (err) {}
 	}
 	// setting stream for output before render
 	useEffect(
@@ -61,10 +55,9 @@ export default function Camera({ camId, ratio }) {
 			faceapi.draw.drawDetections(canvas, resizedDetections);
 			// faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
 			// faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
-		}, 100);
+		}, 300);
 	}
 
-	//render
 	return (
 		<div className="camera">
 			<video
