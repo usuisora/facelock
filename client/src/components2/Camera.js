@@ -1,11 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as faceapi from 'face-api.js';
 import Info from './Info';
-
+// import { faceMatcher } from '../lib/face-api-custom';
 // Camera object
 // Represent a display of one of video inputs
-export default function Camera({ camId, ratio }) {
+export default function Camera({ camId, ratio, faceMatcher }) {
 	const [ mediaStream, setMediaStream ] = useState(null);
+
 	// ref to HTML elements
 	const videoRef = useRef();
 	const canvasPicWebCam = useRef();
@@ -48,7 +49,8 @@ export default function Camera({ camId, ratio }) {
 		faceapi.matchDimensions(canvas, displaySize);
 		setInterval(async () => {
 			const detections = await faceapi.detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions());
-			// .withFaceLandmarks()
+
+			// let faceMatcher = new faceapi.FaceMatcher(detections).withFaceLandmarks();
 			// .withFaceExpressions();
 			const resizedDetections = faceapi.resizeResults(detections, displaySize);
 			canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
