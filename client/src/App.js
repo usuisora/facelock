@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import CameraFactory from './components2/CameraFactory';
+import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';
 
 function App() {
