@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Camera from './Camera';
-import { getCamsIds } from '../lib/mediaLib';
-import { createFaceMatcher } from '../lib/face-api-custom';
+import { getCamsIds } from '../utils/nav-media';
+import { createFaceMatcher } from '../utils/face-matcher';
 
 // Factory
 // initalize Camera objects
