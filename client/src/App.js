@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';
-
+import AddEmployeeForm from './components/AddEmployeeForm';
 function App() {
 	const [ loading, setLoading ] = useState(true);
 	const config = {
@@ -28,8 +28,8 @@ function App() {
 	}, []);
 	return (
 		<div className="App">
-			<h1>Cams</h1>
-			<CameraFactory config={config} loading={loading} />
+			{/* <CameraFactory config={config} loading={loading} /> */}
+			<AddEmployeeForm />
 		</div>
 	);
 }
