@@ -49,28 +49,51 @@ ul {
 	list-style-type: none;
 }
 
-input {
+/* input {
 	display: flex;
 	flex-direction: column;
 	margin: 10px;
 	color: #eee;
-}
+} */
 
 .dropzone {
-	margin: 30px 10px;
-	padding: 20px 30px;
-	border: 4px dashed #03242c;
-	color: #eee;
+	margin: 30px 0;
+	padding: 50px 30px;
+	background-color: #ccc;
+	width: 80%;
+	color: #111;
+	font-weight: bold;
+	border-radius: 4px;
 }
 
-.mycenter {
+.dropzone:hover {
+	background-color: #ddd;
+}
+
+.wrapper {
+	display: flex;
+	margin: 50px 0;
+}
+form {
+	flex: 3;
+	margin: 0 10px;
+}
+.preview {
+	margin: 0 10px;
+	padding: 10px 30px;
+	flex: 2;
 	display: flex;
 	flex-direction: column;
-	flex: 1;
-	max-width: 600px;
-	margin: auto;
+	background-color: #444;
 }
-
 h4 {
 	color: #ddd;
+}
+img {
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 5px;
+	max-width: 100%;
+	height: auto;
+	margin: 10px 0;
 }
