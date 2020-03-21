@@ -19,6 +19,7 @@ function MyDropzone({ setPreview }) {
 }
 
 function AddEmployeeForm() {
+	const [ isSubmitted, setIsSubmitted ] = useState(false);
 	const [ preview, setPreview ] = useState(placeholder);
 	const [ password, setPassword ] = useState('');
 
@@ -37,14 +38,28 @@ function AddEmployeeForm() {
 	const handleSubmit = () => {
 		if (password === '123') {
 			const d = createDescriptor();
+			setIsSubmitted(true);
 		} else {
 			console.log('incorrect');
+			setPassword('');
 		}
+	};
+
+	const clearForm = () => {
+		setIsSubmitted(false);
+		setState(stateDef);
 	};
 	const toCap = (s) => {
 		return s[0].toUpperCase() + s.slice(1);
 	};
-	return (
+	return isSubmitted ? (
+		<div className="add-form container">
+			<h4>Submitted</h4>
+			<button className="  btn  white  black-text left" onClick={clearForm}>
+				Back to form
+			</button>
+		</div>
+	) : (
 		<div className="add-form container">
 			<h4>Add new employee to the system</h4>
 			<div className="wrapper">
@@ -56,18 +71,15 @@ function AddEmployeeForm() {
 					<div className="row">
 						<input
 							type="password"
-							onChange={handleChange}
+							onChange={({ target }) => setPassword(target.value)}
 							className="col s6 white-text"
 							placeholder="Admin password"
 							required
+							value={password}
 						/>
 					</div>
 
-					<button
-						variant="contained"
-						className=" col s1 btn  green lighten-3  black-text left"
-						onClick={handleSubmit}
-					>
+					<button className=" col s1 btn  green lighten-3  black-text left" onClick={handleSubmit}>
 						Add
 					</button>
 				</form>
