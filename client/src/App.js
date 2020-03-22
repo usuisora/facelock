@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Nav from './components/Nav';
 import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';
 
@@ -28,8 +29,9 @@ function App() {
 	}, []);
 	return (
 		<div className="App">
+			<Nav />
 			<h1>Cams</h1>
-			<CameraFactory config={config} loading={loading} />
+			{/* <CameraFactory config={config} loading={loading} /> */}
 		</div>
 	);
 }
