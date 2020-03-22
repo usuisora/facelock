@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Camera from './Camera';
-import { getCamsIds } from '../lib/mediaLib';
 import { createFaceMatcher } from '../lib/face-api-custom';
 
 // Factory
@@ -11,12 +10,14 @@ export default function CameraFactory({ config, loading }) {
 
 	useEffect(
 		() => {
-			// (before render) asyncronosly get all cameras (video inputs )
-			getCamsIds().then((ids) => setCamIds(ids));
-			if (!loading) {
-				createFaceMatcher().then((res) => setFaceMatcher(res));
+			async function fetchCamIds() {
+				const devices = await navigator.mediaDevices.enumerateDevices();
+				return await devices.filter((dev) => dev.kind === 'videoinput').map((cam) => cam.deviceId);
 			}
-			console.log('updated');
+			fetchCamIds().then((IDs) => setCamIds(IDs));
+			if (loading === false) {
+				createFaceMatcher().then((matcher) => setFaceMatcher(matcher));
+			}
 		},
 		[ loading ]
 	);
