@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';
-import AddEmployeeForm from './components/AddEmployeeForm/AddEmployeeForm';
+import AddEmployeeForm from './components/AddEmployeeForm';
 function App() {
 	const [ loading, setLoading ] = useState(true);
 	const config = {

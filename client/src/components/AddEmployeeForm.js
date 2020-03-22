@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { createDescriptor } from '../../utils/face-matcher';
-import './AddEmployee.module.scss';
-import placeholder from '../../media/placeholder.png';
+import { createDescriptor } from '../utils/face-matcher';
+import placeholder from '../media/placeholder.png';
 
 function MyDropzone({ setPreview }) {
 	const onDrop = useCallback((files) => {
@@ -12,22 +11,25 @@ function MyDropzone({ setPreview }) {
 
 	return (
 		<div className="dropzone" {...getRootProps()}>
-			<input {...getInputProps()} accept=".jpg, .jpeg, .png, .svg" required />
+			<input {...getInputProps()} accept=".jpg, .jpeg, .png, .svg" />
 			{isDragActive ? <p>Drop the image here ...</p> : <p>Drag 'n' drop some image here, or click to select </p>}
 		</div>
 	);
 }
+const stateDef = {
+	name: '',
+	surname: '',
+	id: ''
+};
 
 function AddEmployeeForm() {
 	const [ isSubmitted, setIsSubmitted ] = useState(false);
+	const [ Failed, setFailed ] = useState({
+		image: false,
+		password: false
+	});
 	const [ preview, setPreview ] = useState(placeholder);
 	const [ password, setPassword ] = useState('');
-
-	let stateDef = {
-		name: '',
-		surname: '',
-		id: ''
-	};
 	const [ state, setState ] = useState({ ...stateDef });
 
 	const handleChange = (e) => {
@@ -35,19 +37,27 @@ function AddEmployeeForm() {
 		setState({ ...state, [attr]: e.target.value });
 	};
 
-	const handleSubmit = () => {
+	const handleSubmit = (e) => {
+		e.preventDefault();
 		if (password === '123') {
 			const d = createDescriptor();
+			if (!d) {
+				setFailed({ image: true });
+				setPreview(placeholder);
+				return;
+			}
 			setIsSubmitted(true);
+			setFailed({ password: false, image: false });
 		} else {
-			console.log('incorrect');
-			setPassword('');
+			setFailed({ password: true });
 		}
+		setPassword('');
 	};
 
 	const clearForm = () => {
 		setIsSubmitted(false);
 		setState(stateDef);
+		setPreview(placeholder);
 	};
 	const toCap = (s) => {
 		return s[0].toUpperCase() + s.slice(1);
@@ -63,10 +73,11 @@ function AddEmployeeForm() {
 		<div className="add-form container">
 			<h4>Add new employee to the system</h4>
 			<div className="wrapper">
-				<form>
+				<form onSubmit={handleSubmit}>
 					{Object.keys(state).map((s) => (
 						<input className="white-text" placeholder={toCap(s)} onChange={handleChange} required />
 					))}
+					{Failed.image && <p class="sub red-text">Face not found</p>}
 					<MyDropzone setPreview={setPreview} />
 					<div className="row">
 						<input
@@ -77,18 +88,16 @@ function AddEmployeeForm() {
 							required
 							value={password}
 						/>
+						{Failed.password && <p className="red-text">Password incorrect</p>}
 					</div>
 
-					<button className=" col s1 btn  green lighten-3  black-text left" onClick={handleSubmit}>
-						Add
-					</button>
+					<button className=" col s1 btn  green lighten-3  black-text left">Add</button>
 				</form>
 				<div className="preview">
 					<h4>Preview</h4>
 					<li>Name: {state.name}</li>
 					<li>Surname: {state.surname}</li>
 					<li>ID: {state.id}</li>
-
 					<img src={preview} />
 				</div>
 			</div>
