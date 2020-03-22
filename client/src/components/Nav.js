@@ -3,19 +3,23 @@ import React from 'react';
 export default function Nav() {
 	return (
 		<nav>
-			<div class="nav-wrapper black white-text">
-				<a href="#" class="btn right">
-					Add
-				</a>
-				<ul id="nav-mobile" class="left hide-on-med-and-down">
+			<div class="nav-wrapper app black white-text">
+				<ul class="right ">
 					<li>
-						<a href="#">Sass</a>
+						<a class="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn">ADD</a>
+					</li>
+				</ul>
+				<ul id="nav-mobile" class="left ">
+					<li>
+						<a class="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn">Cams</a>
 					</li>
 					<li>
-						<a href="#">Components</a>
+						<a class="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn">
+							Alert cams
+						</a>
 					</li>
 					<li>
-						<a href="#">JavaScript</a>
+						<a class="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn">Faces</a>
 					</li>
 				</ul>
 			</div>
