@@ -29,5 +29,10 @@ export default function CameraFactory({ config, loading }) {
 		<h1>....</h1>
 	);
 
-	return <div className="camFactory">{cams}</div>;
+	return (
+		<div className="camFactory">
+			<h1>Cams</h1>
+			{cams}
+		</div>
+	);
 }
