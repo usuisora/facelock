@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Camera from './Camera';
 import { getCamsIds } from '../utils/nav-media';
 import { createFaceMatcher } from '../utils/face-matcher';
-
+import img from '../media/ivan.jpg';
 // Factory
 // initalize Camera objects
 export default function CameraFactory({ config, loading }) {
@@ -14,7 +14,7 @@ export default function CameraFactory({ config, loading }) {
 			// (before render) asyncronosly get all cameras (video inputs )
 			getCamsIds().then((ids) => setCamIds(ids));
 			if (!loading) {
-				createFaceMatcher().then((res) => setFaceMatcher(res));
+				createFaceMatcher(img).then((matcher) => setFaceMatcher(matcher));
 			}
 			console.log('updated');
 		},

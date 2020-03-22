@@ -1,25 +1,44 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Nav() {
 	return (
 		<nav>
-			<div class="nav-wrapper app black white-text">
-				<ul class="right ">
+			<div className="nav-wrapper app black white-text">
+				<ul className="right ">
 					<li>
-						<a class="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn">ADD</a>
+						<Link
+							to="/add"
+							className="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn"
+						>
+							ADD
+						</Link>
 					</li>
 				</ul>
-				<ul id="nav-mobile" class="left ">
+				<ul id="nav-mobile" className="left ">
 					<li>
-						<a class="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn">Cams</a>
+						<Link
+							to="/"
+							className="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn"
+						>
+							Cams
+						</Link>
 					</li>
 					<li>
-						<a class="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn">
+						<Link
+							to="/alert"
+							className="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn"
+						>
 							Alert cams
-						</a>
+						</Link>
 					</li>
 					<li>
-						<a class="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn">Faces</a>
+						<Link
+							to="/faces"
+							className="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn"
+						>
+							Faces
+						</Link>
 					</li>
 				</ul>
 			</div>
