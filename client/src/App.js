@@ -3,16 +3,13 @@ import Nav from './components/Nav';
 import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';
 import AddEmployeeForm from './components/AddEmployeeForm';
+import { createFaceMatcher } from './utils/face-matcher';
 
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 function App() {
 	const [ loading, setLoading ] = useState(true);
-	const config = {
-		ratio: {
-			width: '400',
-			height: '300'
-		}
-	};
+	const [ faceMatcher, setFaceMatcher ] = useState(null);
+
 	useEffect(() => {
 		Promise.all([
 			faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
@@ -23,6 +20,7 @@ function App() {
 		]).then(
 			() => {
 				setLoading(false);
+				createFaceMatcher().then((matcher) => setFaceMatcher(matcher));
 			},
 			(err) => {
 				console.log('Models are not loaded', err);
@@ -43,7 +41,11 @@ function App() {
 					<Route path="/faces" exact>
 						<div>Faces</div>
 					</Route>
-					<Route path="/" exact component={() => <CameraFactory config={config} loading={loading} />} />
+					<Route
+						path="/"
+						exact
+						component={() => <CameraFactory loading={loading} faceMatcher={faceMatcher} />}
+					/>
 				</Switch>
 			</Router>
 			{/* <CameraFactory config={config} loading={loading} /> */}

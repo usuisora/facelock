@@ -2,28 +2,34 @@ import React, { useRef, useEffect, useState } from 'react';
 import * as faceapi from 'face-api.js';
 import Info from './Info';
 
-export default function Camera({ camId, ratio, faceMatcher }) {
+export default function Camera({ camId, faceMatcher }) {
 	const [ mediaStream, setMediaStream ] = useState(null);
 	const videoRef = useRef();
 	const canvasPicWebCam = useRef();
 
+	const ratio = {
+		width: '400',
+		height: '300'
+	};
+	async function enableStream() {
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: {
+					deviceId: { exact: camId }
+				}
+			});
+			setMediaStream(stream);
+		} catch (err) {
+			console.log('rer', err);
+		}
+	}
+
 	// setting stream for output before render
 	useEffect(
 		() => {
-			async function enableStream() {
-				try {
-					const stream = await navigator.mediaDevices.getUserMedia({
-						video: {
-							deviceId: { exact: camId }
-						}
-					});
-					setMediaStream(stream);
-				} catch (err) {
-					console.log('rer', err);
-				}
-			}
+			let mounted = true;
 			if (!mediaStream) {
-				enableStream();
+				if (mounted) enableStream();
 			} else {
 				return function cleanup() {
 					mediaStream.getTracks().forEach((track) => {
@@ -32,6 +38,7 @@ export default function Camera({ camId, ratio, faceMatcher }) {
 					});
 				};
 			}
+			return () => false;
 		},
 		[ mediaStream ]
 	);
@@ -51,7 +58,7 @@ export default function Camera({ camId, ratio, faceMatcher }) {
 					.detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions())
 					.withFaceLandmarks()
 					.withFaceDescriptor();
-				if (detection) {
+				if (detection !== undefined) {
 					const resizedDetection = faceapi.resizeResults(detection, displaySize);
 					canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 					faceapi.draw.drawDetections(canvas, resizedDetection);
@@ -64,7 +71,7 @@ export default function Camera({ camId, ratio, faceMatcher }) {
 		}, 300);
 	}
 
-	return faceMatcher ? (
+	return (
 		<div className="camera">
 			<video
 				id={camId}
@@ -80,7 +87,5 @@ export default function Camera({ camId, ratio, faceMatcher }) {
 			<canvas ref={canvasPicWebCam} />
 			<Info />
 		</div>
-	) : (
-		<div>Facematcher loading</div>
 	);
 }

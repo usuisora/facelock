@@ -1,39 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import Camera from './Camera';
-import { createFaceMatcher } from '../utils/face-matcher';
 
 // Factory
 // initalize Camera objects
-export default function CameraFactory({ config, loading }) {
-	const [ faceMatcher, setFaceMatcher ] = useState(null);
+export default function CameraFactory({ faceMatcher, loading }) {
 	const [ camIds, setCamIds ] = useState(null); // camera set
-
+	async function fetchCamIds() {
+		const devices = await navigator.mediaDevices.enumerateDevices();
+		return await devices.filter((dev) => dev.kind === 'videoinput').map((cam) => cam.deviceId);
+	}
 	useEffect(
 		() => {
-			async function fetchCamIds() {
-				const devices = await navigator.mediaDevices.enumerateDevices();
-				return await devices.filter((dev) => dev.kind === 'videoinput').map((cam) => cam.deviceId);
-			}
+			let mounted = true;
+
 			fetchCamIds().then((IDs) => setCamIds(IDs));
-			if (loading === false) {
-				createFaceMatcher().then((matcher) => setFaceMatcher(matcher));
-			}
+			// if (loading === false) {
+			// 	createFaceMatcher().then((matcher) => setFaceMatcher(matcher));
+			// }
+			return () => (mounted = false);
 		},
 		[ loading ]
-	);
-
-	const cams = camIds ? (
-		camIds.map((deviceId) => (
-			<Camera key={deviceId} camId={deviceId} ratio={config.ratio} faceMatcher={faceMatcher} />
-		))
-	) : (
-		<h1>....</h1>
 	);
 
 	return (
 		<div className="container">
 			<h1>Cams</h1>
-			<div className="camFactory">{cams}</div>
+			<div className="camFactory">
+				{camIds &&
+					camIds.map((deviceId) => <Camera key={deviceId} camId={deviceId} faceMatcher={faceMatcher} />)}
+			</div>
 		</div>
 	);
 }
