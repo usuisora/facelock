@@ -8,23 +8,33 @@ export default function Camera({ camId, ratio, faceMatcher }) {
 	const canvasPicWebCam = useRef();
 
 	// setting stream for output before render
-	useEffect(() => {
-		async function enableStream() {
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({
-					video: {
-						deviceId: { exact: camId }
-					}
-				});
-				setMediaStream(stream);
-			} catch (err) {
-				console.log('rer');
+	useEffect(
+		() => {
+			async function enableStream() {
+				try {
+					const stream = await navigator.mediaDevices.getUserMedia({
+						video: {
+							deviceId: { exact: camId }
+						}
+					});
+					setMediaStream(stream);
+				} catch (err) {
+					console.log('rer', err);
+				}
 			}
-		}
-		if (!mediaStream) {
-			enableStream();
-		}
-	}, []);
+			if (!mediaStream) {
+				enableStream();
+			} else {
+				return function cleanup() {
+					mediaStream.getTracks().forEach((track) => {
+						track.stop();
+						console.log('clean up');
+					});
+				};
+			}
+		},
+		[ mediaStream ]
+	);
 
 	//  when useEffect ended it will check again
 	if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
@@ -36,18 +46,20 @@ export default function Camera({ camId, ratio, faceMatcher }) {
 		const displaySize = { width: videoRef.current.width, height: videoRef.current.height };
 		faceapi.matchDimensions(canvas, displaySize);
 		setInterval(async () => {
-			const detection = await faceapi
-				.detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions())
-				.withFaceLandmarks()
-				.withFaceDescriptor();
-			if (detection) {
-				const resizedDetection = faceapi.resizeResults(detection, displaySize);
-				canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-				faceapi.draw.drawDetections(canvas, resizedDetection);
-				// faceapi.draw.drawFaceLandmarks(canvas, resizedDetection);
-				// faceapi.draw.drawFaceExpressions(canvas, resizeddetection);
-				let bestmatch = await faceMatcher.findBestMatch(detection.descriptor);
-				console.log('bestmatch ', bestmatch.toString());
+			if (videoRef.current) {
+				const detection = await faceapi
+					.detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions())
+					.withFaceLandmarks()
+					.withFaceDescriptor();
+				if (detection) {
+					const resizedDetection = faceapi.resizeResults(detection, displaySize);
+					canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+					faceapi.draw.drawDetections(canvas, resizedDetection);
+					// faceapi.draw.drawFaceLandmarks(canvas, resizedDetection);
+					// faceapi.draw.drawFaceExpressions(canvas, resizeddetection);
+					let bestmatch = await faceMatcher.findBestMatch(detection.descriptor);
+					console.log('bestmatch ', bestmatch.toString());
+				}
 			}
 		}, 300);
 	}

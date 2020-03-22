@@ -9,7 +9,7 @@ export async function createDescriptor(imageBlb) {
 }
 
 export async function createFaceMatcher(imageBlb) {
-	const descriptor = await createDescriptor(imageBlb);
+	const descriptor = await createDescriptor(ivanImage);
 	const faceMatcher = new faceapi.FaceMatcher(descriptor);
 	return faceMatcher;
 }

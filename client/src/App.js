@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Nav from './components/Nav';
 import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';
+import AddEmployeeForm from './components/AddEmployeeForm';
 
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 function App() {
 	const [ loading, setLoading ] = useState(true);
 	const config = {
@@ -28,8 +31,22 @@ function App() {
 	}, []);
 	return (
 		<div className="App">
-			<h1>Cams</h1>
-			<CameraFactory config={config} loading={loading} />
+			<Router>
+				<Nav />
+				<Switch>
+					<Route path="/add" exact>
+						<AddEmployeeForm />
+					</Route>
+					<Route path="/alert" exact>
+						<div>Alerted cams component</div>
+					</Route>
+					<Route path="/faces" exact>
+						<div>Faces</div>
+					</Route>
+					<Route path="/" exact component={() => <CameraFactory config={config} loading={loading} />} />
+				</Switch>
+			</Router>
+			{/* <CameraFactory config={config} loading={loading} /> */}
 		</div>
 	);
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Camera from './Camera';
-import { createFaceMatcher } from '../lib/face-api-custom';
+import { createFaceMatcher } from '../utils/face-matcher';
 
 // Factory
 // initalize Camera objects
@@ -30,5 +30,10 @@ export default function CameraFactory({ config, loading }) {
 		<h1>....</h1>
 	);
 
-	return <div className="camFactory">{cams}</div>;
+	return (
+		<div className="container">
+			<h1>Cams</h1>
+			<div className="camFactory">{cams}</div>
+		</div>
+	);
 }
