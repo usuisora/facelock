@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { createDescriptor } from '../utils/face-matcher';
+import { createLabeledDescriptor } from '../utils/face-matcher';
 import placeholder from '../media/placeholder.png';
 
 function MyDropzone({ setPreview }) {
@@ -40,7 +40,7 @@ function AddEmployeeForm() {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		if (password === '123') {
-			const d = createDescriptor();
+			const d = createLabeledDescriptor(this.state.name, preview);
 			if (!d) {
 				setFailed({ image: true });
 				setPreview(placeholder);

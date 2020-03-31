@@ -3,9 +3,12 @@ import Nav from './components/Nav';
 import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';
 import AddEmployeeForm from './components/AddEmployeeForm';
-import { createFaceMatcher } from './utils/face-matcher';
-
+import { faceMatcher, createFaceMatcher, createLabeledDescriptor } from './utils/face-matcher';
+import image from './media/ivan.jpg';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
+import * as R from 'ramda';
+
 function App() {
 	const [ loading, setLoading ] = useState(true);
 	const [ faceMatcher, setFaceMatcher ] = useState(null);
@@ -15,12 +18,12 @@ function App() {
 			faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
 			faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
 			faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-			faceapi.nets.faceLandmark68Net.loadFromUri('/models')
-			// faceapi.nets.faceExpressionNet.loadFromUri('/models')
+			faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+			faceapi.nets.faceExpressionNet.loadFromUri('/models')
 		]).then(
 			() => {
 				setLoading(false);
-				createFaceMatcher().then((matcher) => setFaceMatcher(matcher));
+				createLabeledDescriptor('ivan', image).then((ld) => R.compose(setFaceMatcher, createFaceMatcher)(ld));
 			},
 			(err) => {
 				console.log('Models are not loaded', err);
