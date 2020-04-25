@@ -40,7 +40,7 @@ function AddEmployeeForm() {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		if (password === '123') {
-			const d = createLabeledDescriptor(this.state.name, preview);
+			const d = createLabeledDescriptor(state.name, preview);
 			if (!d) {
 				setFailed({ image: true });
 				setPreview(placeholder);
