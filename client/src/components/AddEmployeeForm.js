@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { createLabeledDescriptor } from '../utils/face-matcher';
+import { createLabeledDescriptor } from '../util/face-matcher';
 import placeholder from '../media/placeholder.png';
 
 function MyDropzone({ setPreview }) {

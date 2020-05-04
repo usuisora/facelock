@@ -3,7 +3,7 @@ import Nav from './components/Nav';
 import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';
 import AddEmployeeForm from './components/AddEmployeeForm';
-import { faceMatcher, createFaceMatcher, createLabeledDescriptor } from './utils/face-matcher';
+import { faceMatcher, createFaceMatcher, createLabeledDescriptor } from './util/face-matcher';
 import image from './media/ivan.jpg';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ function App() {
 	useEffect(() => {
 		Promise.all([
 			faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
-			faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+			// faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
 			faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
 			faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
 			faceapi.nets.faceExpressionNet.loadFromUri('/models')

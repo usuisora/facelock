@@ -27,6 +27,7 @@ export default function Camera({ camId, faceMatcher }) {
 	// setting stream for output before render
 	useEffect(
 		() => {
+			debugger;
 			let mounted = true;
 			if (!mediaStream) {
 				if (mounted) enableStream();
@@ -38,7 +39,7 @@ export default function Camera({ camId, faceMatcher }) {
 					});
 				};
 			}
-			return () => false;
+			return () => (mounted = false);
 		},
 		[ mediaStream ]
 	);
@@ -55,15 +56,17 @@ export default function Camera({ camId, faceMatcher }) {
 		setInterval(async () => {
 			if (videoRef.current) {
 				const detection = await faceapi
-					.detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions())
+					.detectSingleFace(videoRef.current)
 					.withFaceLandmarks()
+					.withFaceExpressions()
 					.withFaceDescriptor();
+
 				if (detection !== undefined) {
 					const resizedDetection = faceapi.resizeResults(detection, displaySize);
 					canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 					faceapi.draw.drawDetections(canvas, resizedDetection);
-					// faceapi.draw.drawFaceLandmarks(canvas, resizedDetection);
-					// faceapi.draw.drawFaceExpressions(canvas, resizeddetection);
+					faceapi.draw.drawFaceLandmarks(canvas, resizedDetection);
+					faceapi.draw.drawFaceExpressions(canvas, resizedDetection);
 					let bestmatch = await faceMatcher.findBestMatch(detection.descriptor);
 					console.log('bestmatch ', bestmatch.toString());
 				}
