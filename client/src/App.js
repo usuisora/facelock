@@ -6,16 +6,14 @@ import AddEmployeeForm from './components/AddEmployeeForm';
 import { faceMatcher, createFaceMatcher, createLabeledDescriptor } from './util/face-matcher';
 import image from './media/ivan.jpg';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-
 import * as R from 'ramda';
 
 function App() {
 	const [ loading, setLoading ] = useState(true);
 	const [ faceMatcher, setFaceMatcher ] = useState(null);
-
 	useEffect(() => {
 		Promise.all([
-			faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
+			faceapi.nets.ssdMobilenetv1.loadFromUri('./models'),
 			// faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
 			faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
 			faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
@@ -51,7 +49,6 @@ function App() {
 					/>
 				</Switch>
 			</Router>
-			{/* <CameraFactory config={config} loading={loading} /> */}
 		</div>
 	);
 }
