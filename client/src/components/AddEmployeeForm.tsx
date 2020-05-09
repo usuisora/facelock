@@ -1,9 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, FormEvent, ChangeEvent } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { createLabeledDescriptor } from '../util/face-matcher';
+import { createLabeledDescriptor } from '../util/faceMatcher';
+// @ts-ignore
 import placeholder from '../media/placeholder.png';
 
-function MyDropzone({ setPreview }) {
+interface IDropzoneProps {
+	setPreview: (state: any) => any;
+}
+
+function MyDropzone({ setPreview }: IDropzoneProps) {
 	const onDrop = useCallback((files) => {
 		setPreview(URL.createObjectURL(files[0]));
 	}, []);
@@ -24,7 +29,7 @@ const stateDef = {
 
 function AddEmployeeForm() {
 	const [ isSubmitted, setIsSubmitted ] = useState(false);
-	const [ Failed, setFailed ] = useState({
+	const [ failed, setFailed ] = useState({
 		image: false,
 		password: false
 	});
@@ -32,24 +37,26 @@ function AddEmployeeForm() {
 	const [ password, setPassword ] = useState('');
 	const [ state, setState ] = useState({ ...stateDef });
 
-	const handleChange = (e) => {
+	const handleChange = (e: ChangeEvent) => {
+		//@ts-ignore
 		const attr = e.target.placeholder.toLowerCase();
+		//@ts-ignore
 		setState({ ...state, [attr]: e.target.value });
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
 		if (password === '123') {
-			const d = createLabeledDescriptor(state.name, preview);
-			if (!d) {
-				setFailed({ image: true });
+			const labeledDescriptor = createLabeledDescriptor(state.name, preview);
+			if (!labeledDescriptor) {
+				setFailed({ image: true, password: false });
 				setPreview(placeholder);
 				return;
 			}
 			setIsSubmitted(true);
 			setFailed({ password: false, image: false });
 		} else {
-			setFailed({ password: true });
+			setFailed({ password: true, image: true });
 		}
 		setPassword('');
 	};
@@ -59,9 +66,8 @@ function AddEmployeeForm() {
 		setState(stateDef);
 		setPreview(placeholder);
 	};
-	const toCap = (s) => {
-		return s[0].toUpperCase() + s.slice(1);
-	};
+	const toCap = (s: string | any[]) => s[0].toUpperCase() + s.slice(1);
+
 	return isSubmitted ? (
 		<div className="add-form container">
 			<h4>Submitted</h4>
@@ -77,7 +83,7 @@ function AddEmployeeForm() {
 					{Object.keys(state).map((s) => (
 						<input className="white-text" placeholder={toCap(s)} onChange={handleChange} required />
 					))}
-					{Failed.image && <p class="sub red-text">Face not found</p>}
+					{failed.image && <p className="sub red-text">Face not found</p>}
 					<MyDropzone setPreview={setPreview} />
 					<div className="row">
 						<input
@@ -88,7 +94,7 @@ function AddEmployeeForm() {
 							required
 							value={password}
 						/>
-						{Failed.password && <p className="red-text">Password incorrect</p>}
+						{failed.password && <p className="red-text">Password incorrect</p>}
 					</div>
 
 					<button className=" col s1 btn  green lighten-3  black-text left">Add</button>

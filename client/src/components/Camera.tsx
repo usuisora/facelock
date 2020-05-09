@@ -1,11 +1,16 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, MutableRefObject, SetStateAction } from 'react';
 import * as faceapi from 'face-api.js';
 import Info from './Info';
 
-export default function Camera({ camId, faceMatcher }) {
-	const [ mediaStream, setMediaStream ] = useState(null);
-	const videoRef = useRef();
-	const canvasPicWebCam = useRef();
+type IProps = {
+	camId: string;
+	faceMatcher: Promise<any>;
+};
+type IStream = MediaStream | null;
+export default function Camera({ camId, faceMatcher }: IProps) {
+	const [ mediaStream, setMediaStream ] = useState<IStream>(null);
+	const videoRef = useRef() as MutableRefObject<HTMLVideoElement>;
+	const canvasPicWebCam = useRef() as MutableRefObject<HTMLCanvasElement>;
 
 	const ratio = {
 		width: '400',
@@ -27,15 +32,13 @@ export default function Camera({ camId, faceMatcher }) {
 	// setting stream for output before render
 	useEffect(
 		() => {
-			debugger;
 			let mounted = true;
 			if (!mediaStream) {
 				if (mounted) enableStream();
 			} else {
-				return function cleanup() {
+				return () => {
 					mediaStream.getTracks().forEach((track) => {
 						track.stop();
-						console.log('clean up');
 					});
 				};
 			}
@@ -45,15 +48,17 @@ export default function Camera({ camId, faceMatcher }) {
 	);
 
 	//  when useEffect ended it will check again
-	if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
-		videoRef.current.srcObject = mediaStream;
+	if (mediaStream && videoRef.current) {
+		if (!videoRef.current.srcObject) videoRef.current.srcObject = mediaStream;
 	}
-
 	function handlePlay() {
 		const canvas = canvasPicWebCam.current;
 		const displaySize = { width: videoRef.current.width, height: videoRef.current.height };
 		faceapi.matchDimensions(canvas, displaySize);
 		setInterval(async () => {
+			if (!canvas) {
+				return;
+			}
 			if (videoRef.current) {
 				const detection = await faceapi
 					.detectSingleFace(videoRef.current)
@@ -61,7 +66,7 @@ export default function Camera({ camId, faceMatcher }) {
 					.withFaceExpressions()
 					.withFaceDescriptor();
 
-				if (detection !== undefined) {
+				if (detection) {
 					const resizedDetection = faceapi.resizeResults(detection, displaySize);
 					canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 					faceapi.draw.drawDetections(canvas, resizedDetection);

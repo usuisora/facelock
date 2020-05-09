@@ -3,14 +3,17 @@ import Nav from './components/Nav';
 import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';
 import AddEmployeeForm from './components/AddEmployeeForm';
-import { faceMatcher, createFaceMatcher, createLabeledDescriptor } from './util/face-matcher';
+import { createFaceMatcher, createLabeledDescriptor } from './util/faceMatcher';
 import image from './media/ivan.jpg';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import * as R from 'ramda';
 
 function App() {
 	const [ loading, setLoading ] = useState(true);
-	const [ faceMatcher, setFaceMatcher ] = useState(null);
+	const [ faceMatcher, setFaceMatcher ] = useState() as [
+		faceapi.FaceMatcher,
+		React.Dispatch<React.SetStateAction<faceapi.FaceMatcher>>
+	];
 	useEffect(() => {
 		Promise.all([
 			faceapi.nets.ssdMobilenetv1.loadFromUri('./models'),
@@ -21,6 +24,7 @@ function App() {
 		]).then(
 			() => {
 				setLoading(false);
+				//@ts-ignore
 				createLabeledDescriptor('ivan', image).then((ld) => R.compose(setFaceMatcher, createFaceMatcher)(ld));
 			},
 			(err) => {

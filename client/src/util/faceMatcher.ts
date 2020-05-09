@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as faceapi from 'face-api.js';
 import ivanImage from '../media/ivan.jpg';
-import * as R from 'ramda';
+// import * as R from 'ramda';
 
-export function createDescriptor(imageBlb) {
+export function createDescriptor(imageBlb: string) {
 	console.log('image descr');
 	let htmlImg = new Image();
 	htmlImg.src = imageBlb;
@@ -11,7 +11,7 @@ export function createDescriptor(imageBlb) {
 	console.log(d);
 	return d;
 }
-export async function createLabeledDescriptor(label, imageBlb) {
+export async function createLabeledDescriptor(label: string, imageBlb: string) {
 	let htmlImg = new Image();
 	htmlImg.src = imageBlb;
 
@@ -23,7 +23,7 @@ export async function createLabeledDescriptor(label, imageBlb) {
 	return labeledDescriptors;
 }
 
-export function createFaceMatcher(labeledDescriptors) {
+export function createFaceMatcher(labeledDescriptors: any) {
 	const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
 	console.log(faceMatcher);
 	return faceMatcher;
