@@ -4,13 +4,13 @@ import Info from './Info';
 
 type IProps = {
 	camId: string;
-	faceMatcher: Promise<any>;
+	faceMatcher: faceapi.FaceMatcher;
 };
 type IStream = MediaStream | null;
 export default function Camera({ camId, faceMatcher }: IProps) {
 	const [ mediaStream, setMediaStream ] = useState<IStream>(null);
-	const videoRef = useRef() as MutableRefObject<HTMLVideoElement>;
-	const canvasPicWebCam = useRef() as MutableRefObject<HTMLCanvasElement>;
+	const videoRef = useRef<HTMLVideoElement>(null);
+	const canvasPicWebCam = useRef<HTMLCanvasElement>(null);
 
 	const ratio = {
 		width: '400',
@@ -40,6 +40,7 @@ export default function Camera({ camId, faceMatcher }: IProps) {
 					mediaStream.getTracks().forEach((track) => {
 						track.stop();
 					});
+					mounted = false;
 				};
 			}
 			return () => (mounted = false);
@@ -53,8 +54,8 @@ export default function Camera({ camId, faceMatcher }: IProps) {
 	}
 	function handlePlay() {
 		const canvas = canvasPicWebCam.current;
-		const displaySize = { width: videoRef.current.width, height: videoRef.current.height };
-		faceapi.matchDimensions(canvas, displaySize);
+		const displaySize = { width: videoRef.current!.width, height: videoRef.current!.height };
+		faceapi.matchDimensions(canvas as faceapi.IDimensions, displaySize);
 		setInterval(async () => {
 			if (!canvas) {
 				return;
@@ -68,11 +69,13 @@ export default function Camera({ camId, faceMatcher }: IProps) {
 
 				if (detection) {
 					const resizedDetection = faceapi.resizeResults(detection, displaySize);
+					// @ts-ignore
 					canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 					faceapi.draw.drawDetections(canvas, resizedDetection);
 					faceapi.draw.drawFaceLandmarks(canvas, resizedDetection);
 					faceapi.draw.drawFaceExpressions(canvas, resizedDetection);
-					let bestmatch = await faceMatcher.findBestMatch(detection.descriptor);
+					let fm = await faceMatcher;
+					const bestmatch = fm.findBestMatch(detection.descriptor);
 					console.log('bestmatch ', bestmatch.toString());
 				}
 			}
@@ -87,7 +90,7 @@ export default function Camera({ camId, faceMatcher }: IProps) {
 				width={ratio.width}
 				height={ratio.height}
 				onPlay={handlePlay}
-				onCanPlay={() => videoRef.current.play()}
+				onCanPlay={() => videoRef.current!.play()}
 				autoPlay
 				playsInline
 				muted

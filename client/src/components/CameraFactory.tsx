@@ -10,7 +10,7 @@ type IProps = {
 };
 type ICamIds = string[];
 export default function CameraFactory({ faceMatcher, loading }: IProps) {
-	const [ camIds, setCamIds ] = useState() as [ICamIds, SetStateAction<any>]; // camera set
+	const [ camIds, setCamIds ] = useState<ICamIds>(); // camera set
 	async function fetchCamIds() {
 		const devices = await navigator.mediaDevices.enumerateDevices();
 		return await devices.filter((dev) => dev.kind === 'videoinput').map((cam) => cam.deviceId);

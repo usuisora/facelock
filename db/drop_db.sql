@@ -1,0 +1,1 @@
+DROP DATABASE if EXISTS bc_database;
