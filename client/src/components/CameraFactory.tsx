@@ -1,4 +1,4 @@
-import React, { useState, useEffect, EffectCallback, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import Camera from './Camera';
 import { FaceMatcher } from 'face-api.js';
 

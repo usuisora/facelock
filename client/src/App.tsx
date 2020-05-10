@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Nav from './components/Nav';
 import CameraFactory from './components/CameraFactory';
 import * as faceapi from 'face-api.js';

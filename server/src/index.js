@@ -9,9 +9,7 @@ app.use(
 		extended: true
 	})
 );
-app.get('/models', (request, response) => {
-	response.json({ info: 'no data' });
-});
+
 app.get('/', (request, response) => res.send('Hello World!'));
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

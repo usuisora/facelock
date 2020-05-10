@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, MutableRefObject, SetStateAction } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as faceapi from 'face-api.js';
 import Info from './Info';
 
@@ -45,7 +45,7 @@ export default function Camera({ camId, faceMatcher }: IProps) {
 			}
 			return () => (mounted = false);
 		},
-		[ mediaStream ]
+		[ mediaStream, enableStream ]
 	);
 
 	//  when useEffect ended it will check again
@@ -79,7 +79,7 @@ export default function Camera({ camId, faceMatcher }: IProps) {
 					console.log('bestmatch ', bestmatch.toString());
 				}
 			}
-		}, 300);
+		}, 200);
 	}
 
 	return (
