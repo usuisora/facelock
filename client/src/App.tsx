@@ -1,12 +1,15 @@
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Nav from './components/Nav';
 import CameraFactory from './components/CameraFactory';
-import * as faceapi from 'face-api.js';
 import AddEmployeeForm from './components/AddEmployeeForm';
-import { createFaceMatcher, createLabeledDescriptor } from './util/faceMatcher';
-import image from './media/ivan.jpg';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { path } from './constants/routes';
+import * as faceapi from 'face-api.js';
 import * as R from 'ramda';
+
+import { createFaceMatcher, createLabeledDescriptor } from './util/faceMatcher';
+
+import image from './media/ivan.jpg';
 
 function App() {
 	const [ loading, setLoading ] = useState(true);
@@ -37,20 +40,26 @@ function App() {
 			<Router>
 				<Nav />
 				<Switch>
-					<Route path="/add" exact>
-						<AddEmployeeForm />
-					</Route>
-					<Route path="/alert" exact>
-						<div>Alerted cams component</div>
-					</Route>
-					<Route path="/faces" exact>
-						<div>Faces</div>
-					</Route>
 					<Route
-						path="/"
+						path={path.terminal}
 						exact
 						component={() => <CameraFactory loading={loading} faceMatcher={faceMatcher} />}
 					/>
+					<Route path={path.login}>
+						<div>Login</div>
+					</Route>
+					<Route path={path.logs} exact>
+						<div>Logs</div>
+					</Route>
+					<Route path={path.settings} exact>
+						<div>Settings</div>
+					</Route>
+					<Route path={path.workers} exact>
+						<div>workers</div>
+					</Route>
+					<Route path={path.addWorker} exact>
+						<AddEmployeeForm />
+					</Route>
 				</Switch>
 			</Router>
 		</div>

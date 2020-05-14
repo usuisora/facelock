@@ -1,25 +1,38 @@
 import { IRoute } from '../types/types';
 
+export let path = {
+	login: '/login',
+	terminal: '/terminal',
+	settings: '/settings',
+	workers: '/workers',
+	addWorker: '/addWorker',
+	logs: '/logs'
+};
+
 const routes: IRoute[] = [
 	{
 		name: 'Login',
-		path: '/login'
+		path: path.login
 	},
 	{
 		name: 'Terminal',
-		path: '/terminal'
+		path: path.terminal
 	},
 	{
 		name: 'Settings',
-		path: '/settings'
+		path: path.settings
 	},
 	{
 		name: 'Workers',
-		path: '/workers'
+		path: path.workers
 	},
 	{
 		name: 'Add Worker',
-		path: '/addWorker'
+		path: path.addWorker
+	},
+	{
+		name: 'Logs',
+		path: path.logs
 	}
 ];
 export default routes;
