@@ -1,4 +1,4 @@
-import { IRoute } from '../types/types';
+import { IRoute } from '../types/Route.type';
 
 export let path = {
 	login: '/login',
