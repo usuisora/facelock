@@ -1,13 +1,13 @@
-import { IRoute } from '../types/types';
+import { IRoute } from '../types/Route.type';
 
-export let path = {
-	login: '/login',
-	terminal: '/terminal',
-	settings: '/settings',
-	workers: '/workers',
-	addWorker: '/addWorker',
-	logs: '/logs'
-};
+export enum path {
+	login = '/login',
+	terminal = '/',
+	settings = '/settings',
+	workers = '/workers',
+	addWorker = '/addWorker',
+	logs = '/logs'
+}
 
 const routes: IRoute[] = [
 	{

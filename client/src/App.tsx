@@ -10,7 +10,6 @@ import * as R from 'ramda';
 import { createFaceMatcher, createLabeledDescriptor } from './util/faceMatcher';
 
 import image from './media/ivan.jpg';
-
 function App() {
 	const [ loading, setLoading ] = useState(true);
 	const [ faceMatcher, setFaceMatcher ] = useState() as [
