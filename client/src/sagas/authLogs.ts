@@ -19,6 +19,7 @@ export const authActions = createActions<reducerType>(resource, actions);
 export const authReducer = createReducers<reducerType>(resource, actions);
 
 function* getAuthLogs() {}
+
 export function* authLogsSaga() {
 	yield takeEvery(authTypes.get.run, getAuthLogs);
 }
