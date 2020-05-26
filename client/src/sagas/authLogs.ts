@@ -14,12 +14,12 @@ const resource = 'AUTH_LOGS';
 const actions = [ 'get' ];
 type reducerType = IAuthLog[];
 
-export const authTypes = createActionTypes(resource, actions);
-export const authActions = createActions<reducerType>(resource, actions);
-export const authReducer = createReducers<reducerType>(resource, actions);
+export const authLogsTypes = createActionTypes(resource, actions);
+export const authLogsActions = createActions<reducerType>(resource, actions);
+export const authLogsReducer = createReducers<reducerType>(resource, actions);
 
 function* getAuthLogs() {}
 
 export function* authLogsSaga() {
-	yield takeEvery(authTypes.get.run, getAuthLogs);
+	yield takeEvery(authLogsTypes.get.run, getAuthLogs);
 }

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Nav from './components/Nav';
 import CameraFactory from './components/CameraFactory';
 import AddEmployeeForm from './components/AddEmployeeForm';
+import Logs from './components/Logs/Logs';
 import { path } from './constants/routes';
 import * as faceapi from 'face-api.js';
 import * as R from 'ramda';
@@ -48,7 +49,7 @@ function App() {
 						<div>Login</div>
 					</Route>
 					<Route path={path.logs} exact>
-						<div>Logs</div>
+						<Logs />
 					</Route>
 					<Route path={path.settings} exact>
 						<div>Settings</div>

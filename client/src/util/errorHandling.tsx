@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import React from 'react';
 
-import styles from '../assets/scss/fullPage.module.scss';
+// import styles from '../assets/scss/fullPage.module.scss';
 import { IValueState } from './valueState';
 
 // @ts-ignore
@@ -34,7 +34,7 @@ export const displayErrors = (state: object, introMessage: string, expectedError
 	const errorMessages = expectedErrors ? getErrorsByKey(state, expectedErrors) : getAllErrors(state);
 	if (errorMessages.length) {
 		return (
-			<div className={styles.error}>
+			<div>
 				<b>{introMessage}:</b> <br />
 				<br /> {errorMessages.map((message, index) => <p key={index}>{message}</p>)}
 			</div>

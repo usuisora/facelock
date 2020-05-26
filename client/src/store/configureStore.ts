@@ -13,12 +13,12 @@ export const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();
 
 const store = createStore(rootReducer, getInitialStore(), composeWithDevTools(applyMiddleware(sagaMiddleware)));
-
+console.log(store.getState());
 sagaMiddleware.run(rootSaga);
 
 export default store;
 
-export const getStore = () => (store.getState() as unknown) as IStore;
+export const getStore = () => store.getState();
 
 export const navigate = (path: string) => history.push(path);
 export const replace = (path: string) => history.replace(path);

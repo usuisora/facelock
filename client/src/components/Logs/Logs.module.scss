@@ -1,0 +1,12 @@
+@import '../../assets/scss/variables.scss';
+
+.logs {
+	.list {
+		display: flex;
+		flex-direction: column;
+		.row {
+			display: grid;
+			grid-template-columns: 10% %80 10%;
+		}
+	}
+}

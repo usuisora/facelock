@@ -5,15 +5,16 @@ import { IAuthLog } from './authLog.type';
 import { IOtherLog } from './otherLog.type';
 import { ITerminal } from './Terminal.type';
 import { IWorker } from './Worker.type';
+import { IValueState } from 'util/valueState';
 
 export interface IStore {
-	location: ILocation;
-	auth: IAuth;
-	authLogs: IAuthLog[];
-	otherLogs: IOtherLog[];
-	workers: IWorker[];
-	selectedWorker: IWorker;
-	office: IOffice;
-	terminal: ITerminal;
-	settings: ISettings[];
+	location: ILocation | IValueState;
+	auth: IAuth | IValueState;
+	authLogs: IAuthLog[] | IValueState;
+	otherLogs: IOtherLog[] | IValueState;
+	workers: IWorker[] | IValueState;
+	selectedWorker: IWorker | IValueState;
+	office: IOffice | IValueState;
+	terminal: ITerminal | IValueState;
+	settings: ISettings[] | IValueState;
 }

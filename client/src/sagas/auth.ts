@@ -8,19 +8,19 @@ import { http } from '../util/apiServiceRequest';
 import { createActions, createReducers, createActionTypes } from '../util/reduxBoilerplate';
 
 import { replace } from '../store/configureStore';
+import { IValueState } from 'util/valueState';
 
 const resource = 'AUTH';
 const actions = [ 'get', 'delete', 'rememberEmail' ];
-type reducerType = IAuth;
-
-export const authTypes = createActionTypes(resource, actions);
-export const authActions = createActions<reducerType>(resource, actions);
-export const authReducer = createReducers<reducerType>(resource, actions);
-
 export interface IAuth {
 	token: string | null;
 	email?: string;
 }
+type reducerType = IAuth;
+
+export const authTypes = createActionTypes(resource, actions);
+export const authActions = createActions<reducerType>(resource, actions);
+export const authReducer = createReducers<IAuth>(resource, actions);
 
 export interface ILoginPayload {
 	username: string;

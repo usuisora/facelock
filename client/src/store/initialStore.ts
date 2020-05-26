@@ -1,8 +1,9 @@
 import { LOCAL_STORAGE_TOKEN_KEY } from '../constants/localStorage';
-import { notLoadedState } from '../util/valueState';
+import { notLoadedState, IValueState } from '../util/valueState';
 import { ISettings } from '../types/Settings.type';
 import { IStore } from '../types/Store.type';
 import { IAuthLog } from 'types/authLog.type';
+// @ts-ignore
 import { IOtherLog } from 'types/otherLog.type';
 import { IWorker } from 'types/Worker.type';
 import { ITerminal } from 'types/Terminal.type';
@@ -21,12 +22,12 @@ export const getInitialStore = (): Partial<IStore> => {
 			}
 		},
 		auth: { token },
-		authLogs: (notLoadedState() as unknown) as IAuthLog[],
-		otherLogs: (notLoadedState() as unknown) as IOtherLog[],
-		workers: (notLoadedState() as unknown) as IWorker[],
-		selectedWorker: (notLoadedState() as unknown) as IWorker,
-		office: (notLoadedState() as unknown) as IOffice,
-		terminal: (notLoadedState() as unknown) as ITerminal,
-		settings: (notLoadedState() as unknown) as ISettings[]
+		authLogs: notLoadedState(),
+		otherLogs: notLoadedState(),
+		workers: notLoadedState(),
+		selectedWorker: notLoadedState(),
+		office: notLoadedState(),
+		terminal: notLoadedState(),
+		settings: notLoadedState()
 	};
 };
