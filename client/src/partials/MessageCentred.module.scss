@@ -1,0 +1,8 @@
+@import '../assets/scss/variables.scss';
+.wrapper {
+	width: 100%;
+	color: $messageColor;
+	text-transform: uppercase;
+	font-size: 22px;
+	margin: 100px auto;
+}

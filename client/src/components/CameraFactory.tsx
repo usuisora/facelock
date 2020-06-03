@@ -29,10 +29,10 @@ export default function CameraFactory({ faceMatcher, loading }: IProps) {
 	return (
 		<div className="container">
 			<h1>Cams</h1>
-			<div className="camFactory">
+			{/* <div className="camFactory">
 				{camIds &&
 					camIds.map((deviceId) => <Camera key={deviceId} camId={deviceId} faceMatcher={faceMatcher} />)}
-			</div>
+			</div> */}
 		</div>
 	);
 }

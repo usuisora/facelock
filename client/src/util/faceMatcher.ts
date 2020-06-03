@@ -17,11 +17,7 @@ export async function createLabeledDescriptor(label: string, imageBlb: string) {
 	let htmlImg = new Image();
 	htmlImg.src = imageBlb;
 	// let result = (await faceapi.computeFaceDescriptor(htmlImg)) as Float32Array;
-	debugger;
-
 	const results = await faceapi.detectAllFaces(htmlImg).withFaceLandmarks().withFaceDescriptors();
-
-	debugger;
 
 	// (results)
 	const descriptorsObama = [ new Float32Array(results[0].descriptor) ];

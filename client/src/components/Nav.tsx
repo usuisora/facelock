@@ -9,14 +9,13 @@ export default function Nav() {
 			<div className="nav-wrapper app black white-text">
 				<ul className="right ">
 					{routes.map((route) => (
-						<li>
-							<Link
-								to={route.path}
-								className="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn"
-							>
-								{route.name}
-							</Link>
-						</li>
+						<Link
+							key={route.name}
+							to={route.path}
+							className="waves-effect  black btn-flat   white-text text-lighten-3 waves-light btn"
+						>
+							{route.name}
+						</Link>
 					))}
 				</ul>
 			</div>

@@ -9,8 +9,7 @@ export enum ValueState {
     _status: ValueState;
     _error?: any;
   }
-  export const IsValueState = value =>  value?._status || value?._status === 0
-  
+  export const isValueState = value =>  value?._status 
 
   export const didNotStartLoading = value => value?._status === ValueState.neverLoaded;
   

@@ -13,38 +13,38 @@ import { createFaceMatcher, createLabeledDescriptor } from './util/faceMatcher';
 import image from './media/ivan.jpg';
 function App() {
 	const [ loading, setLoading ] = useState(true);
-	const [ faceMatcher, setFaceMatcher ] = useState() as [
-		faceapi.FaceMatcher,
-		React.Dispatch<React.SetStateAction<faceapi.FaceMatcher>>
-	];
-	useEffect(() => {
-		Promise.all([
-			faceapi.nets.ssdMobilenetv1.loadFromUri('./models'),
-			// faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-			faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-			faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-			faceapi.nets.faceExpressionNet.loadFromUri('/models')
-		]).then(
-			() => {
-				setLoading(false);
-				//@ts-ignore
-				createLabeledDescriptor('ivan', image).then((ld) => R.compose(setFaceMatcher, createFaceMatcher)(ld));
-			},
-			(err) => {
-				console.log('Models are not loaded', err);
-			}
-		);
-	}, []);
+	// const [ faceMatcher, setFaceMatcher ] = useState() as [
+	// 	faceapi.FaceMatcher,
+	// 	React.Dispatch<React.SetStateAction<faceapi.FaceMatcher>>
+	// ];
+	// useEffect(() => {
+	// 	Promise.all([
+	// 		faceapi.nets.ssdMobilenetv1.loadFromUri('./models'),
+	// 		// faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+	// 		faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+	// 		faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+	// 		faceapi.nets.faceExpressionNet.loadFromUri('/models')
+	// 	]).then(
+	// 		() => {
+	// 			setLoading(false);
+	// 			//@ts-ignore
+	// 			createLabeledDescriptor('ivan', image).then((ld) => R.compose(setFaceMatcher, createFaceMatcher)(ld));
+	// 		},
+	// 		(err) => {
+	// 			console.log('Models are not loaded', err);
+	// 		}
+	// 	);
+	// }, []);
 	return (
 		<div className="App">
 			<Router>
 				<Nav />
 				<Switch>
-					<Route
+					{/* <Route
 						path={path.terminal}
 						exact
 						component={() => <CameraFactory loading={loading} faceMatcher={faceMatcher} />}
-					/>
+					/> */}
 					<Route path={path.login}>
 						<div>Login</div>
 					</Route>

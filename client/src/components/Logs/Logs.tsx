@@ -1,54 +1,80 @@
-import React, { Component } from 'react';
-import { connect, MapStateToProps } from 'react-redux';
-import { Dispatch } from 'redux';
-
-import { getStore } from '../../store/configureStore';
+import React, { Component, useContext, useEffect } from 'react';
 import { IOtherLog } from '../../types/otherLog.type';
-import {didNotStartLoading, isLoading, IValueState} from '../../util/valueState'
-import { otherLogsActions } from '../../sagas/otherLogs';
+import { isReady } from '../../util/valueState';
 
-import styles from './Logs.module.scss'
+import { OtherLogsContext } from 'contexts/OtherLogsContext';
+import { AuthLogsContext } from 'contexts/AuthLogsContext';
+import { IAuthLog } from 'types/AuthLog.type';
 
+import styles from './Logs.module.scss';
+import MessageCentered from 'partials/MessageCentered';
 
 interface IPropsFromStore {
-	otherLogs: IOtherLog[] | IValueState;
+	otherLogs: IOtherLog[];
 }
 
-interface IDispatchProps {
-	getOtherLogs: () => void;
-}
+const OtherLogList: React.SFC = () => {
+	const { otherLogs, loadOtherLogs } = useContext(OtherLogsContext);
 
-type IProps = IPropsFromStore & IDispatchProps
-const mapStateToProps = ():IPropsFromStore => ({
-	otherLogs: getStore().otherLogs
-});
-const mapDispatchToProps = (dispatch:Dispatch):IDispatchProps => ({
-	getOtherLogs: () => dispatch(otherLogsActions.get.run())
-});
+	useEffect(() => {
+		loadOtherLogs!('12222');
+	}, []);
 
+	return !isReady(otherLogs) ? (
+		<MessageCentered> No other logs</MessageCentered>
+	) : (
+		<div className={styles.otherList}>
+			<h4>Other logs</h4>
+				<ul className={styles.rowHeader}  >
+			{['id','message', 'when'].map(el => <li key = {el}>{el}</li>)}
+				</ul>
+			{(otherLogs as IOtherLog[]).map((item) => (
+				<ul className={styles.row}>
+					<li>{item.uuid}</li>
+					<li>{item.message}</li>
+					<li>{item.moment}</li>
+				</ul>
+			))}
+		</div>
+	);
+};
+const AuthLogList = () => {
+	const { authLogs, loadAuthLogs } = useContext(AuthLogsContext);
 
-class Logs extends Component<IProps, any > {
-	
-	render() {
-		const {otherLogs, getOtherLogs } = this.props
-		debugger;
-		if(didNotStartLoading(otherLogs) ){
-			getOtherLogs()
-			return  <h1>Start Loading</h1>
-		}
-		if(isLoading(otherLogs)){
-			return  <h1>Loading</h1>
-		}
-		else{
-			return (
+	useEffect(() => {
+		loadAuthLogs!('12222');
+	}, []);
+
+	return !isReady(authLogs) ? (
+		<MessageCentered> No auth logs</MessageCentered>
+	) : (
+		<div className={styles.authList}>
+			{(authLogs as IAuthLog[]).map((item) => (
 				<>
-					<div className={styles.logs}>
-						<h1>Other Logs</h1>
-					</div>
+				<h4>Auth logs</h4>
+				<ul className={styles.rowHeader}>
+			{['id','name', 'when', 'status'].map(el => <li key = {el} className={styles.rowHeader}>{el}</li>)}
+				</ul>
+				<ul className={styles.row}>
+					<li>{item.worker_id}</li>
+					<li>{item.worker_name}</li>
+					<li>{item.moment}</li>
+					<li>{item.success ? 'Succeed' : 'Failed'}</li>
+				</ul>
 				</>
-			);
-		}
-	
-	}
-}
-export default connect<IPropsFromStore, IDispatchProps, any, any>(mapStateToProps, mapDispatchToProps)(Logs);
+				
+			))}
+		</div>
+	);
+};
+
+const Logs: React.SFC = () => {
+	return (
+		<div className={styles.logs}>
+			<OtherLogList />
+			<AuthLogList />
+		</div>
+	);
+};
+
+export default Logs;
