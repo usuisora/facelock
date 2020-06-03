@@ -2,7 +2,7 @@ const app = require('express')({});
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-
+const apiUrl = require('./apiEndpoints');
 const port = 5000;
 
 const corsy = cors({
@@ -29,7 +29,7 @@ app.get('/data', (request, response) =>
 	})
 );
 
-app.get('/other-logs/:id', (request, response) =>
+app.get(`${apiUrl.otherLogs}:id`, (request, response) =>
 	response.json([
 		{
 			uuid: 'uuid1',
@@ -38,4 +38,18 @@ app.get('/other-logs/:id', (request, response) =>
 		}
 	])
 );
+
+app.get(`${apiUrl.authLogs}:id`, (request, response) =>
+	response.json([
+		{
+			uuid: '1231',
+			moment: 'today',
+			success: true,
+			worker_name: 'German',
+			worker_id: '123143131'
+		}
+	])
+);
+
+app.get;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
