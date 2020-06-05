@@ -1,41 +1,43 @@
 import React, { useState, useCallback, FormEvent, ChangeEvent } from 'react';
-import { useDropzone } from 'react-dropzone';
+import MyDropzone from './Dropzone';
 import { createLabeledDescriptor } from '../util/faceMatcher';
 // @ts-ignore
 import placeholder from '../media/placeholder.png';
 
-interface IDropzoneProps {
-	setPreview: (state: any) => any;
+interface IForm {
+	name: string;
+	surname: string;
+	id: string;
 }
 
-function MyDropzone({ setPreview }: IDropzoneProps) {
-	const onDrop = useCallback((files) => {
-		setPreview(URL.createObjectURL(files[0]));
-	}, []);
-	const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-	return (
-		<div className="dropzone" {...getRootProps()}>
-			<input {...getInputProps()} accept=".jpg, .jpeg, .png, .svg" />
-			{isDragActive ? <p>Drop the image here ...</p> : <p>Drag 'n' drop some image here, or click to select </p>}
-		</div>
-	);
+interface IState  {
+	isSubmitted: boolean;
+	isImage: boolean
 }
-const stateDef = {
+
+const stateDef: IForm = {
 	name: '',
 	surname: '',
 	id: ''
 };
 
+
+
 function AddEmployeeForm() {
+
 	const [ isSubmitted, setIsSubmitted ] = useState(false);
+
 	const [ failed, setFailed ] = useState({
 		image: false,
 		password: false
 	});
-	const [ preview, setPreview ] = useState(placeholder);
-	const [ password, setPassword ] = useState('');
-	const [ state, setState ] = useState({ ...stateDef });
+
+	const [ preview, setPreview ] = useState<string>(placeholder);
+
+	const [ password, setPassword ] = useState<string>('');
+
+	const [ state, setState ] = useState<IForm>({ ...stateDef });
+
 
 	const handleChange = (e: ChangeEvent) => {
 		//@ts-ignore
@@ -47,7 +49,7 @@ function AddEmployeeForm() {
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
 		if (password === '123') {
-			const labeledDescriptor = createLabeledDescriptor(state.name, preview);
+			const labeledDescriptor = createLabeledDescriptor(state.name + ' ' + state.surname, preview);
 			if (!labeledDescriptor) {
 				setFailed({ image: true, password: false });
 				setPreview(placeholder);

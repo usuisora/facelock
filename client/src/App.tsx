@@ -11,6 +11,8 @@ import * as R from 'ramda';
 import { createFaceMatcher, createLabeledDescriptor } from './util/faceMatcher';
 
 import image from './media/ivan.jpg';
+import Terminal from 'components/Terminal/Terminal';
+
 function App() {
 	const [ loading, setLoading ] = useState(true);
 	// const [ faceMatcher, setFaceMatcher ] = useState() as [
@@ -47,6 +49,9 @@ function App() {
 					/> */}
 					<Route path={path.login}>
 						<div>Login</div>
+					</Route>
+					<Route path={path.terminal}>
+						<Terminal />
 					</Route>
 					<Route path={path.logs} exact>
 						<Logs />

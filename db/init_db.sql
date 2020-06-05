@@ -31,10 +31,11 @@ CREATE TABLE Guard (id Serial NOT NULL,
 
 CREATE TABLE Office (id Serial NOT NULL,
                                name Text NOT NULL,
-                                         Business_center_id Integer NOT NULL DEFAULT 1 REFERENCES Business_center(id),
-                                                                                                  open Boolean NOT NULL DEFAULT false,
-                                                                                                                                floor serial UNIQUE NOT NULL,
-                                                                                                                                                    PRIMARY KEY (id));
+                                         face_matcher TEXT UNIQUE,
+                                                           Business_center_id Integer NOT NULL DEFAULT 1 REFERENCES Business_center(id),
+                                                                                                                    open Boolean NOT NULL DEFAULT false,
+                                                                                                                                                  floor serial UNIQUE NOT NULL,
+                                                                                                                                                                      PRIMARY KEY (id));
 
 ;
 
@@ -43,13 +44,14 @@ INSERT INTO Office (name)
 VALUES ('Londonice'), ('Sidneyice'), ('Tokioice');
 
 
-CREATE TABLE Worker (id Serial NOT NULL,
-                               name TEXT not null,
-                                         last_name Text NOT NULL,
-                                                        phone Text NOT NULL UNIQUE,
-                                                                            Office_id Integer NOT NULL REFERENCES Office(id),
-                                                                                                                  face_descriptor Text NOT NULL UNIQUE,
-                                                                                                                                                PRIMARY KEY (id)) ;
+CREATE TABLE Worker
+    (id Serial NOT NULL,
+               name TEXT not null,
+                         last_name Text NOT NULL,
+                                        phone Text NOT NULL UNIQUE,
+                                                            Office_id Integer NOT NULL REFERENCES Office(id) ON DELETE CASCADE,
+                                                                                                                       face_descriptor Text NOT NULL UNIQUE,
+                                                                                                                                                     PRIMARY KEY (id)) ;
 
 
 CREATE TABLE Terminal (id Serial NOT NULL,

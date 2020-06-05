@@ -21,10 +21,10 @@ export const OtherLogsContext = createContext<Partial<IContextProps>>({});
 export function OtherLogsProvider({ children }) {
 	const [ otherLogs, setOtherLogs ] = useState<IOtherLog[] | IValueState>(notLoadedState());
 
-	const loadOtherLogs = async (terminalUuid) => {
+	const loadOtherLogs = async (officeUuid) => {
 		try {
 			setOtherLogs(loadingState());
-			const otherLogs = await getData<IOtherLog[]>(ApiUrl.otherLogs + terminalUuid);
+			const otherLogs = await getData<IOtherLog[]>(ApiUrl.otherLogsByOfficeId(officeUuid));
 			setOtherLogs(otherLogs);
 		} catch (err) {
 			setOtherLogs(errorState(null, err));

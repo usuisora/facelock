@@ -1,16 +1,24 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
+
+import { OfficeContext } from '../contexts/OfficeContext';
 import * as faceapi from 'face-api.js';
 import Info from './Info';
+import { isValueState, didNotStartLoading, isReady } from 'util/valueState';
+import { IOffice } from 'types/Office.type';
 
 type IProps = {
 	camId: string;
-	faceMatcher: faceapi.FaceMatcher;
+	// faceMatcher: faceapi.FaceMatcher;
 };
-type IStream = MediaStream | null;
-export default function Camera({ camId, faceMatcher }: IProps) {
-	const [ mediaStream, setMediaStream ] = useState<IStream>(null);
+
+export default function Camera({ camId }: IProps) {
+	const [ mediaStream, setMediaStream ] = useState<MediaStream | null>(null);
+	const [ faceMatcher, setFaceMatcher ] = useState<faceapi.FaceMatcher | null>(null);
 	const videoRef = useRef<HTMLVideoElement>(null);
+
 	const canvasPicWebCam = useRef<HTMLCanvasElement>(null);
+
+	const { office, loadOfficeByTerminalUuid } = useContext(OfficeContext);
 
 	const ratio = {
 		width: '400',
@@ -28,7 +36,16 @@ export default function Camera({ camId, faceMatcher }: IProps) {
 			console.log('rer', err);
 		}
 	}
-
+	useEffect(
+		() => {
+			if (!didNotStartLoading(office)) {
+				loadOfficeByTerminalUuid!(camId);
+			} else if (isReady(office)) {
+				setFaceMatcher((office as IOffice).faceMatcher);
+			}
+		},
+		[ office ]
+	);
 	// setting stream for output before render
 	useEffect(
 		() => {
@@ -67,15 +84,14 @@ export default function Camera({ camId, faceMatcher }: IProps) {
 					.withFaceExpressions()
 					.withFaceDescriptor();
 
-				if (detection) {
+				if (detection && faceMatcher) {
 					const resizedDetection = faceapi.resizeResults(detection, displaySize);
 					// @ts-ignore
 					canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 					faceapi.draw.drawDetections(canvas, resizedDetection);
 					faceapi.draw.drawFaceLandmarks(canvas, resizedDetection);
 					faceapi.draw.drawFaceExpressions(canvas, resizedDetection);
-					let fm = await faceMatcher;
-					const bestmatch = fm.findBestMatch(detection.descriptor);
+					const bestmatch = faceMatcher.findBestMatch(detection.descriptor);
 					console.log('bestmatch ', bestmatch.toString());
 				}
 			}

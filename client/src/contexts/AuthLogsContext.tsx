@@ -25,10 +25,10 @@ export function AuthLogsProvider({ children }) {
 		isValueState(authLogs) ? setAuthLogs([ newAuthLog ]) : setAuthLogs([ ...(authLogs as IAuthLog[]), newAuthLog ]);
 	};
 
-	const loadAuthLogs = async (terminalUuid) => {
+	const loadAuthLogs = async (officeUuid) => {
 		try {
 			setAuthLogs(loadingState());
-			const authLogs = await getData<IAuthLog[]>(ApiUrl.authLogs + terminalUuid);
+			const authLogs = await getData<IAuthLog[]>(ApiUrl.authLogsByOfficeId(officeUuid));
 			setAuthLogs([ ...authLogs ]);
 		} catch (err) {
 			setAuthLogs(errorState(null, err));

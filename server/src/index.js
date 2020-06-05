@@ -29,7 +29,7 @@ app.get('/data', (request, response) =>
 	})
 );
 
-app.get(`${apiUrl.otherLogs}:id`, (request, response) =>
+app.get(apiUrl.otherLogsByOfficeId, (request, response) =>
 	response.json([
 		{
 			uuid: 'uuid1',
@@ -39,7 +39,18 @@ app.get(`${apiUrl.otherLogs}:id`, (request, response) =>
 	])
 );
 
-app.get(`${apiUrl.authLogs}:id`, (request, response) =>
+app.get(apiUrl.authLogsByOfficeId, (request, response) =>
+	response.json([
+		{
+			uuid: '1231',
+			moment: 'today',
+			success: true,
+			worker_name: 'German',
+			worker_id: '123143131'
+		}
+	])
+);
+app.get(apiUrl.faceMatcherByOfficeUuid, (request, response) =>
 	response.json([
 		{
 			uuid: '1231',
@@ -51,5 +62,19 @@ app.get(`${apiUrl.authLogs}:id`, (request, response) =>
 	])
 );
 
-app.get;
+app.get(apiUrl.officeByTerminalId, (request, response) => {
+	const terminalUuid = request.params.id;
+
+	response.json([
+		{
+			uuid: 'office123132',
+			name: 'Goana-Office',
+			faceMatcher: JSON.stringify({ faces: [ 'f1', 'f2' ] }),
+			businessCenterUuid: '1',
+			open: true,
+			floor: 3
+		}
+	]);
+});
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

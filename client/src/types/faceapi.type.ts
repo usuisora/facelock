@@ -1,0 +1,1 @@
+export type IFaceDescriptor = Promise<Float32Array | Float32Array[]>
