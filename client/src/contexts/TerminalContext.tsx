@@ -28,8 +28,11 @@ export const TerminalContext = createContext<Partial<IContextProps>>({});
 
 export function TerminalProvider({ children }) {
 	const [ camUuids, setCamUuids ] = useState<string[] | IValueState>(notLoadedState()); // camera set
-	const [ terminals, setTerminals ] = useState<ITerminal[] | IValueState>();
-	const [ selectedTerminal, setSelectedTerminal ] = useState<ITerminal | null>();
+	const [ terminals, setTerminals ] = useState<ITerminal[] | IValueState>(notLoadedState());
+	const [ selectedTerminal, setSelectedTerminal ] = useState<ITerminal | null>({
+		uuid: 'adasdasdassd1',
+		officeUuid:'1'
+	});
 
 	const getCameraDevicesIds = () =>
 		navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {

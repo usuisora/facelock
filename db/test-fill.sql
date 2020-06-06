@@ -15,3 +15,12 @@ VALUES ('TestGuard',
         'Smith',
         'noguardphone',
         'gpass' 'gfaceid')
+insert into other_event(message, moment, terminal_id)
+values ('no massage',
+        LOCALTIMESTAMP,
+        1)
+insert into login_event(terminal_id, moment,face_descriptor, success)
+values (1,
+        LOCALTIMESTAMP,
+        'face2988821',
+        True)

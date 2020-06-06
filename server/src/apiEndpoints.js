@@ -10,9 +10,9 @@ module.exports = {
 	faceMatcherByOfficeUuid: `/offices/:id/facematcher/`,
 
 	otherLogs: '/other-logs/',
-	otherLogsByOfficeId: '/other-logs/:id',
+	otherLogsByOfficeUuid: '/other-logs/:officeUuid',
 	authLogs: '/auth-logs/',
-	authLogsByOfficeId: '/auth-logs/:id',
+	authLogsByOfficeUuid: '/auth-logs/:officeUuid',
 	terminals: '/terminals/',
 	activate: '/users/activate/',
 	settings: '/settings/'

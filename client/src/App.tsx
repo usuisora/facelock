@@ -12,6 +12,7 @@ import { createFaceMatcher, createLabeledDescriptor } from './util/faceMatcher';
 
 import image from './media/ivan.jpg';
 import Terminal from 'components/Terminal/Terminal';
+import Settings from 'components/Settings/Settings';
 
 function App() {
 	const [ loading, setLoading ] = useState(true);
@@ -52,7 +53,7 @@ function App() {
 						<Logs />
 					</Route>
 					<Route path={path.settings}>
-						<div>Settings</div>
+						<Settings />
 					</Route>
 					<Route path={path.workers}>
 						<div>workers</div>

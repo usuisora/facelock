@@ -1,7 +1,6 @@
 export interface IAuthLog {
-	uuid: string;
+	face_descriptor: string;
 	moment: string;
 	success: boolean;
-	worker_name: string;
-	worker_id: string;
+	worker_id?: string;
 }

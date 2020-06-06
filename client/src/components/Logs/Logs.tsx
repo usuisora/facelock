@@ -14,11 +14,7 @@ interface IPropsFromStore {
 }
 
 const OtherLogList: React.SFC = () => {
-	const { otherLogs, loadOtherLogs } = useContext(OtherLogsContext);
-
-	useEffect(() => {
-		loadOtherLogs!('12222');
-	}, []);
+	const { otherLogs} = useContext(OtherLogsContext);
 
 	return !isReady(otherLogs) ? (
 		<MessageCentered> No other logs</MessageCentered>
@@ -26,38 +22,35 @@ const OtherLogList: React.SFC = () => {
 		<div className={styles.otherList}>
 			<h4>Other logs</h4>
 				<ul className={styles.rowHeader}  >
-			{['id','message', 'when'].map(el => <li key = {el}>{el}</li>)}
+			{[ 'timestamp', 'message',].map(el => <li key = {el}>{el}</li>)}
 				</ul>
 			{(otherLogs as IOtherLog[]).map((item) => (
 				<ul className={styles.row}>
-					<li>{item.uuid}</li>
-					<li>{item.message}</li>
 					<li>{item.moment}</li>
+					<li>{item.message}</li>
+
 				</ul>
 			))}
 		</div>
 	);
 };
 const AuthLogList = () => {
-	const { authLogs, loadAuthLogs } = useContext(AuthLogsContext);
-
-	useEffect(() => {
-		loadAuthLogs!('12222');
-	}, []);
+	const { authLogs} = useContext(AuthLogsContext);
 
 	return !isReady(authLogs) ? (
 		<MessageCentered> No auth logs</MessageCentered>
 	) : (
 		<div className={styles.authList}>
+			<h4>Auth logs</h4>
+				<ul className={styles.rowHeader}>
+			{['worker id','Descriptor', 'timestamp', 'status'].map(el => <li key = {el} className={styles.rowHeader}>{el}</li>)}
+				</ul>
 			{(authLogs as IAuthLog[]).map((item) => (
 				<>
-				<h4>Auth logs</h4>
-				<ul className={styles.rowHeader}>
-			{['id','name', 'when', 'status'].map(el => <li key = {el} className={styles.rowHeader}>{el}</li>)}
-				</ul>
+				
 				<ul className={styles.row}>
-					<li>{item.worker_id}</li>
-					<li>{item.worker_name}</li>
+				<a >{item.worker_id || 'Unknown'}</a>
+					<li>{item.face_descriptor }</li>
 					<li>{item.moment}</li>
 					<li>{item.success ? 'Succeed' : 'Failed'}</li>
 				</ul>
@@ -70,9 +63,11 @@ const AuthLogList = () => {
 
 const Logs: React.SFC = () => {
 	return (
-		<div className={styles.logs}>
+		<div className='container'>
+			<div className={styles.logs}>
 			<OtherLogList />
 			<AuthLogList />
+			</div>
 		</div>
 	);
 };

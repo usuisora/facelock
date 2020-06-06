@@ -14,10 +14,12 @@ export default function Terminal() {
 	const { selectedTerminal } = useContext(TerminalContext);
 
 	return selectedTerminal ? (
-		<div className={styles.terminal}>
-			<h3>Terminal</h3>
-			<TerminalInfo />
-			<Camera camUuid={selectedTerminal.uuid} />
+		<div className="container">
+			<div className={styles.terminal}>
+				<h3>Terminal</h3>
+				<TerminalInfo />
+				<Camera camUuid={selectedTerminal.uuid} />
+			</div>
 		</div>
 	) : (
 		<div className="center">

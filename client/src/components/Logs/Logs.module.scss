@@ -1,19 +1,21 @@
 @import '../../assets/scss/variables.scss';
 
 .logs {
-	margin: 0 40px;
 	.otherList {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 		.row {
 			display: grid;
-			grid-template-columns: 1fr 3fr 1fr;
+			padding: 2px 10px;
+			grid-template-columns: 1fr 1fr;
+			margin: 0;
 		}
 
 		.rowHeader {
+			padding: 2px 10px;
 			display: grid;
-			grid-template-columns: 1fr 3fr 1fr;
+			grid-template-columns: 1fr 1fr;
 			text-transform: uppercase;
 		}
 	}
@@ -22,22 +24,26 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-
+		li {
+			margin: auto 0;
+		}
 		.row {
+			padding: 2px 10px;
 			display: grid;
-			grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+			margin: 0;
 		}
 
 		.rowHeader {
+			padding: 2px 10px;
 			display: grid;
-			grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+			grid-template-columns: 1fr 1fr 1fr 1fr;
 			text-transform: uppercase;
 		}
 	}
 }
 .row {
 	box-shadow: 1px 2px 3px rgba($color: #000000, $alpha: .3);
-	padding: 10px;
 }
 .rowHeader {
 	padding: 10px;

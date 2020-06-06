@@ -1,6 +1,6 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext,useEffect } from 'react';
 import { IOtherLog } from 'types/otherLog.type';
-import { IValueState, notLoadedState, loadingState, errorState, isValueState } from 'util/valueState';
+import { IValueState, notLoadedState, loadingState, errorState, isValueState,isReady } from 'util/valueState';
 import { ApiUrl } from 'constants/apiEndpoints';
 import { getData, postData } from '../modules/api';
 import Moment from 'moment';
@@ -38,19 +38,26 @@ export function OtherLogsProvider({ children }) {
 
 	const addOtherLog = (message) => {
 		const moment = Moment().format();
-		const uuid = uuidv1();
+
 		const newOtherLog: IOtherLog = {
-			uuid,
 			moment,
 			message,
 			terminalUuid: (selectedTerminal as ITerminal).uuid,
-			officeUuid: (selectedTerminal as ITerminal).officeUuid
 		};
+		
 		isValueState(otherLogs)
 			? setOtherLogs([ newOtherLog ])
 			: setOtherLogs([ ...(otherLogs as IOtherLog[]), newOtherLog ]);
 		postData(ApiUrl.otherLogs, newOtherLog);
 	};
+
+	useEffect(() => {
+		debugger
+		if( isReady(selectedTerminal) ){
+			loadOtherLogs(selectedTerminal?.officeUuid)
+		}
+		
+	}, [selectedTerminal])
 
 	return (
 		<OtherLogsContext.Provider value={{ otherLogs, loadOtherLogs, addOtherLog }}>
@@ -59,4 +66,3 @@ export function OtherLogsProvider({ children }) {
 	);
 }
 
-// // export default OtherLogsProvider;
