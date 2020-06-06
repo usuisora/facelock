@@ -4,31 +4,14 @@ import { loadModels } from 'util/faceApiUtil';
 import { TerminalContext } from '../../contexts/TerminalContext';
 import Camera from './Camera';
 import TerminalInfo from './TerminalInfo';
-
-import styles from '/Terminal.module.scss';
 import MessageCentered from 'partials/MessageCentered';
 
-const WIDTH = 420;
-const HEIGHT = 420;
-const inputSize = 160;
+import styles from './Terminal.module.scss';
+import { path } from 'constants/routes';
+import { Link } from 'react-router-dom';
 
 export default function Terminal() {
 	const { selectedTerminal } = useContext(TerminalContext);
-
-	// useEffect(
-	// 	() => {
-	// 		// if (didNotStartLoading(selectedTerminal)) {
-	// 		// 	loadTerminal();
-	// 		// 	return;
-	// 		// } else
-	// 		if (isValueState(selectedTerminal)) {
-	// 			return;
-	// 		} else {
-	// 			setCamUuid((selectedTerminal as ITerminal).uuid);
-	// 		}
-	// 	},
-	// 	[ selectedTerminal ]
-	// );
 
 	return selectedTerminal ? (
 		<div className={styles.terminal}>
@@ -37,6 +20,11 @@ export default function Terminal() {
 			<Camera camUuid={selectedTerminal.uuid} />
 		</div>
 	) : (
-		<MessageCentered>No selected terminal</MessageCentered>
+		<div className="center">
+			<MessageCentered> No selected terminal</MessageCentered>
+			<Link to={path.settings} className="waves-effect  black  waves-light btn">
+				Choose terminal
+			</Link>
+		</div>
 	);
 }

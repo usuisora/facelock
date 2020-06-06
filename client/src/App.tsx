@@ -42,27 +42,22 @@ function App() {
 			<Router>
 				<Nav />
 				<Switch>
-					{/* <Route
-						path={path.terminal}
-						exact
-						component={() => <CameraFactory loading={loading} faceMatcher={faceMatcher} />}
-					/> */}
 					<Route path={path.login}>
 						<div>Login</div>
 					</Route>
-					<Route path={path.terminal}>
+					<Route path={path.terminal} exact>
 						<Terminal />
 					</Route>
-					<Route path={path.logs} exact>
+					<Route path={path.logs}>
 						<Logs />
 					</Route>
-					<Route path={path.settings} exact>
+					<Route path={path.settings}>
 						<div>Settings</div>
 					</Route>
-					<Route path={path.workers} exact>
+					<Route path={path.workers}>
 						<div>workers</div>
 					</Route>
-					<Route path={path.addWorker} exact>
+					<Route path={path.addWorker}>
 						<AddEmployeeForm />
 					</Route>
 				</Switch>

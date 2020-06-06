@@ -21,6 +21,8 @@ type IContextProps = IState & IActions;
 export const OtherLogsContext = createContext<Partial<IContextProps>>({});
 
 export function OtherLogsProvider({ children }) {
+	const { selectedTerminal } = useContext(TerminalContext);
+
 	const [ otherLogs, setOtherLogs ] = useState<IOtherLog[] | IValueState>(notLoadedState());
 
 	const loadOtherLogs = async (officeUuid) => {
@@ -35,7 +37,6 @@ export function OtherLogsProvider({ children }) {
 	};
 
 	const addOtherLog = (message) => {
-		const { selectedTerminal } = useContext(TerminalContext);
 		const moment = Moment().format();
 		const uuid = uuidv1();
 		const newOtherLog: IOtherLog = {

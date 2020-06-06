@@ -28,10 +28,9 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 
 	const canvasPicWebCam = useRef<HTMLCanvasElement>(null);
 
-	const ratio = {
-		width: '400',
-		height: '300'
-	};
+	const WIDTH = 400;
+	const HEIGHT = 300;
+	const inputSize = 160;
 
 	const enableStream = async () => {
 		try {
@@ -96,8 +95,8 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 			<video
 				id={camUuid}
 				ref={videoRef}
-				width={ratio.width}
-				height={ratio.height}
+				width={WIDTH}
+				height={HEIGHT}
 				onPlay={handlePlay}
 				onCanPlay={() => videoRef.current!.play()}
 				autoPlay
