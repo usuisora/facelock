@@ -5,6 +5,6 @@ export interface IWorker {
 	officeUuid: string;
 	name: string;
 	phone: string;
-	imageBlob?: string;
+	imageBlob?: string | null;
 	faceDescriptor?: faceapi.LabeledFaceDescriptors[] | null;
 }

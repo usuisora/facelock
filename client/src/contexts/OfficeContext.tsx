@@ -1,7 +1,10 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { TerminalContext } from './TerminalContext';
+
 import { IWorker } from 'types/Worker.type';
 import { IOffice } from 'types/Office.type';
-import { IValueState, notLoadedState, isValueState, loadingState, errorState } from 'util/valueState';
+import { IValueState, notLoadedState, isValueState, loadingState, errorState, isReady } from 'util/valueState';
+
 import { getData, postData } from 'modules/api';
 import { ApiUrl } from 'constants/apiEndpoints';
 
@@ -12,22 +15,25 @@ interface IState {
 
 interface IActions {
 	loadOfficeByTerminalUuid: (terminalUuid: string) => void;
+
 	loadWorkersByTerminalUuid: (terminalUuid: string) => void;
-	addNewWorkerToOffice: (worker: IWorker) => void;
-	addWorkerToOffice: (worker: IWorker, workerBlobImage: string) => void;
+	addWorkerToOffice:  (worker: IWorker )  => void;
 }
 type IContextProps = IState & IActions;
 
 export const OfficeContext = createContext<Partial<IContextProps>>({});
 
 export default function OfficeContextProvider({ children }) {
-	const [ officeForTerminal, setOfficeForTerminal ] = useState<IOffice | IValueState>(notLoadedState());
-	const [ workers, setWorkers ] = useState<IWorker[] | IValueState>(notLoadedState);
 
-	const loadOfficeByTerminalUuid = async (terminalUuid: string) => {
+	const { selectedTerminal } = useContext(TerminalContext);
+
+	const [ officeForTerminal, setOfficeForTerminal ] = useState<IOffice | IValueState>(notLoadedState());
+
+
+	const loadOfficeByUuid = async (Uuid: string) => {
 		try {
 			setOfficeForTerminal(loadingState());
-			const office = await getData<IOffice>(ApiUrl.officeByTerminalId(terminalUuid));
+			const office = await getData<IOffice>(ApiUrl.officeById(Uuid));
 			setOfficeForTerminal(office);
 		} catch (err) {
 			console.log(err);
@@ -35,28 +41,17 @@ export default function OfficeContextProvider({ children }) {
 		}
 	};
 
-	const loadWorkersByTerminalUuid = async (terminalUuid: string) => {
-		try {
-			setWorkers(loadingState());
-			const nWorkers = await getData<IWorker[]>(ApiUrl.officeByTerminalId(terminalUuid));
-			setWorkers([ ...nWorkers ]);
-		} catch (err) {
-			console.log(err);
-			setWorkers(errorState(null, err));
-		}
-	};
 
-	const addWorkerToOffice = (worker: IWorker, workerBlobImage: string) => {
-		try {
-			setWorkers(loadingState());
-			postData(ApiUrl.workers, { worker, workerBlobImage, officeUuid: worker.officeUuid });
-			setWorkers([ ...(workers as IWorker[]), worker ]);
-		} catch (err) {
-			console.log(err, 'registration failed');
-		}
-	};
+	useEffect(
+		() => {
+			if (isReady(selectedTerminal) && selectedTerminal) {
+				loadOfficeByUuid(selectedTerminal?.officeUuid)
+			}
+		},
+		[ selectedTerminal ]
+	);
 	return (
-		<OfficeContext.Provider value={{ office: officeForTerminal, loadOfficeByTerminalUuid }}>
+		<OfficeContext.Provider value={{ office: officeForTerminal  }}>
 			{children}
 		</OfficeContext.Provider>
 	);

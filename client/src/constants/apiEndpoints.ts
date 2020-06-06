@@ -3,15 +3,22 @@ export const ApiUrl = {
 	logout: `api-token-deauth/`,
 	passwordChange: `rest-auth/password/change/`,
 	workers: `workers/`,
+	workerById: (uuid) => `workers/${uuid}`,
+
 	verifyWorker: `workers/verify`,
 	offices: `offices/`,
-	officeByTerminalId: (uuid) => `offices/${uuid}`,
+	officeById: (uuid) => `offices/${uuid}`,
+
 	faceMatcherByOfficeUuid: (uuid) => `offices/${uuid}/facematcher/`,
 	otherLogs: `other-logs/`,
-	otherLogsByOfficeId: (uuid) => `other-logs/:id`,
+	otherLogsByOfficeId: (uuid) => `other-logs/${uuid}`,
+
 	authLogs: `auth-logs/`,
-	authLogsByOfficeId: (uuid) => `auth-logs/:id`,
+	authLogsByOfficeId: (uuid) => `auth-logs/${uuid}`,
+
 	terminals: `terminals/`,
+	terminalById: (uuid) => `terminals/${uuid}`,
+
 	activate: `users/activate/`,
 	settings: `settings/`
 };

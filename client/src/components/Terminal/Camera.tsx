@@ -1,75 +1,50 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
 
-import { OfficeContext } from '../contexts/OfficeContext';
+import { OfficeContext } from '../../contexts/OfficeContext';
+import { TerminalContext } from '../../contexts/TerminalContext';
+
 import * as faceapi from 'face-api.js';
-import Info from './Info';
+import Info from '../Info';
 import { isValueState, didNotStartLoading, isReady } from 'util/valueState';
 import { IOffice } from 'types/Office.type';
+import { ITerminal } from 'types/Terminal.type';
+import MessageCentered from 'partials/MessageCentered';
 
-type IProps = {
-	camId: string;
-	// faceMatcher: faceapi.FaceMatcher;
-};
+const getStreamByCamUuid = (camUuid: string): Promise<MediaStream> =>
+	navigator.mediaDevices.getUserMedia({
+		video: {
+			deviceId: { exact: camUuid }
+		}
+	});
 
-export default function Camera({ camId }: IProps) {
+interface IOuterProps {
+	camUuid: string;
+}
+
+const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 	const [ mediaStream, setMediaStream ] = useState<MediaStream | null>(null);
-	const [ faceMatcher, setFaceMatcher ] = useState<faceapi.FaceMatcher | null>(null);
+
 	const videoRef = useRef<HTMLVideoElement>(null);
 
 	const canvasPicWebCam = useRef<HTMLCanvasElement>(null);
-
-	const { office, loadOfficeByTerminalUuid } = useContext(OfficeContext);
 
 	const ratio = {
 		width: '400',
 		height: '300'
 	};
-	async function enableStream() {
-		try {
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: {
-					deviceId: { exact: camId }
-				}
-			});
-			setMediaStream(stream);
-		} catch (err) {
-			console.log('rer', err);
-		}
-	}
-	useEffect(
-		() => {
-			if (!didNotStartLoading(office)) {
-				loadOfficeByTerminalUuid!(camId);
-			} else if (isReady(office)) {
-				setFaceMatcher((office as IOffice).faceMatcher);
-			}
-		},
-		[ office ]
-	);
-	// setting stream for output before render
-	useEffect(
-		() => {
-			let mounted = true;
-			if (!mediaStream) {
-				if (mounted) enableStream();
-			} else {
-				return () => {
-					mediaStream.getTracks().forEach((track) => {
-						track.stop();
-					});
-					mounted = false;
-				};
-			}
-			return () => (mounted = false);
-		},
-		[ mediaStream, enableStream ]
-	);
 
-	//  when useEffect ended it will check again
-	if (mediaStream && videoRef.current) {
-		if (!videoRef.current.srcObject) videoRef.current.srcObject = mediaStream;
-	}
-	function handlePlay() {
+	const enableStream = async () => {
+		try {
+			if (camUuid) {
+				const stream: MediaStream = await getStreamByCamUuid(camUuid);
+				setMediaStream(stream);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+	const handlePlay = () => {
 		const canvas = canvasPicWebCam.current;
 		const displaySize = { width: videoRef.current!.width, height: videoRef.current!.height };
 		faceapi.matchDimensions(canvas as faceapi.IDimensions, displaySize);
@@ -84,24 +59,42 @@ export default function Camera({ camId }: IProps) {
 					.withFaceExpressions()
 					.withFaceDescriptor();
 
-				if (detection && faceMatcher) {
+				if (detection) {
 					const resizedDetection = faceapi.resizeResults(detection, displaySize);
 					// @ts-ignore
 					canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 					faceapi.draw.drawDetections(canvas, resizedDetection);
 					faceapi.draw.drawFaceLandmarks(canvas, resizedDetection);
 					faceapi.draw.drawFaceExpressions(canvas, resizedDetection);
-					const bestmatch = faceMatcher.findBestMatch(detection.descriptor);
-					console.log('bestmatch ', bestmatch.toString());
 				}
 			}
 		}, 200);
-	}
+	};
+
+	useEffect(
+		() => {
+			let mounted = true;
+			if (!mediaStream && mounted) {
+				enableStream();
+			} else if (mediaStream && videoRef.current && mounted) {
+				videoRef.current.srcObject = mediaStream;
+			} else if (mediaStream && mounted) {
+				return () => {
+					mediaStream.getTracks().forEach((track) => {
+						track.stop();
+					});
+					mounted = false;
+				};
+			}
+			return () => (mounted = false);
+		},
+		[ mediaStream ]
+	);
 
 	return (
 		<div className="camera">
 			<video
-				id={camId}
+				id={camUuid}
 				ref={videoRef}
 				width={ratio.width}
 				height={ratio.height}
@@ -112,7 +105,8 @@ export default function Camera({ camId }: IProps) {
 				muted
 			/>
 			<canvas ref={canvasPicWebCam} />
-			<Info />
 		</div>
 	);
-}
+};
+
+export default Camera;

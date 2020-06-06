@@ -1,10 +1,12 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { IOtherLog } from 'types/otherLog.type';
 import { IValueState, notLoadedState, loadingState, errorState, isValueState } from 'util/valueState';
 import { ApiUrl } from 'constants/apiEndpoints';
 import { getData, postData } from '../modules/api';
 import Moment from 'moment';
 import { v1 as uuidv1 } from 'uuid';
+import { TerminalContext } from './TerminalContext';
+import { ITerminal } from 'types/Terminal.type';
 
 interface IState {
 	otherLogs: IOtherLog[] | IValueState;
@@ -33,12 +35,15 @@ export function OtherLogsProvider({ children }) {
 	};
 
 	const addOtherLog = (message) => {
+		const { selectedTerminal } = useContext(TerminalContext);
 		const moment = Moment().format();
 		const uuid = uuidv1();
 		const newOtherLog: IOtherLog = {
 			uuid,
 			moment,
-			message
+			message,
+			terminalUuid: (selectedTerminal as ITerminal).uuid,
+			officeUuid: (selectedTerminal as ITerminal).officeUuid
 		};
 		isValueState(otherLogs)
 			? setOtherLogs([ newOtherLog ])
