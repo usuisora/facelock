@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const apiUrl = require('./apiEndpoints');
 
 const getQueries = require('./queries/get');
+const postQueries = require('./queries/post');
 
 const port = 5000;
 
@@ -29,46 +30,37 @@ app.get(apiUrl.otherLogsByOfficeUuid, getQueries.getOtherLogsByOfficeUuid);
 
 app.get(apiUrl.authLogsByOfficeUuid, getQueries.getAuthLogsByOfficeUuid);
 
-app.get(apiUrl.faceMatcherByOfficeUuid, (request, response) =>
-	response.json([
-		{
-			uuid: '1231',
-			moment: 'today',
-			success: true,
-			worker_name: 'German5',
-			worker_id: '123143131'
-		},
-		{
-			uuid: '12231',
-			moment: 'today',
-			success: true,
-			worker_name: 'German2',
-			worker_id: '2143131'
-		}
-	])
-);
+// app.get(apiUrl.terminalsByCamUuids, getQueries.getTerminalsByCamUuids);
 
-app.get(apiUrl.officeByTerminalId, (request, response) => {
-	const terminalUuid = request.params.id;
+app.get(apiUrl.offices, getQueries.getOffices);
 
-	response.json([
-		{
-			uuid: 'office123132',
-			name: 'Goana-Office',
-			faceMatcher: JSON.stringify({ faces: [ 'f1', 'f2' ] }),
-			businessCenterUuid: '1',
-			open: true,
-			floor: 3
-		},
-		{
-			uuid: 'office123144432',
-			name: 'Goana-Office',
-			faceMatcher: JSON.stringify({ faces: [ 'f1', 'f2' ] }),
-			businessCenterUuid: '1',
-			open: true,
-			floor: 3
-		}
-	]);
-});
+app.get(apiUrl.terminals, getQueries.getTerminals);
+
+app.post(apiUrl.terminals, postQueries.postTerminal);
+
+app.get(apiUrl.workers, getQueries.getWorkersByOfficeUuid);
+
+// app.get(apiUrl.officeByTerminalId, (request, response) => {
+// 	const terminalUuid = request.params.id;
+
+// 	response.json([
+// 		{
+// 			uuid: 'office123132',
+// 			name: 'Goana-Office',
+// 			faceMatcher: JSON.stringify({ faces: [ 'f1', 'f2' ] }),
+// 			businessCenterUuid: '1',
+// 			open: true,
+// 			floor: 3
+// 		},
+// 		{
+// 			uuid: 'office123144432',
+// 			name: 'Goana-Office',
+// 			faceMatcher: JSON.stringify({ faces: [ 'f1', 'f2' ] }),
+// 			businessCenterUuid: '1',
+// 			open: true,
+// 			floor: 3
+// 		}
+// 	]);
+// });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

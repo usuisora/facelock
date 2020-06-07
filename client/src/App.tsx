@@ -63,6 +63,7 @@ function App() {
 					</Route>
 				</Switch>
 			</Router>
+			<footer className="white-text center">"footer"</footer>
 		</div>
 	);
 }

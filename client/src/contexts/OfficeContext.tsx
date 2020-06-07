@@ -9,7 +9,8 @@ import { getData, postData } from 'modules/api';
 import { ApiUrl } from 'constants/apiEndpoints';
 
 interface IState {
-	office: IOffice | IValueState;
+	selectedOffice: IOffice | null;
+	offices: IOffice[] | IValueState;
 	workers: IWorker[];
 }
 
@@ -17,42 +18,41 @@ interface IActions {
 	loadOfficeByTerminalUuid: (terminalUuid: string) => void;
 
 	loadWorkersByTerminalUuid: (terminalUuid: string) => void;
-	addWorkerToOffice:  (worker: IWorker )  => void;
+	addWorkerToOffice: (worker: IWorker) => void;
+	setSelectedOffice: React.Dispatch<React.SetStateAction<IOffice | null>>;
 }
 type IContextProps = IState & IActions;
 
 export const OfficeContext = createContext<Partial<IContextProps>>({});
 
-export default function OfficeContextProvider({ children }) {
+export const OfficeContextProvider = ({ children }) => {
+	const [ selectedOffice, setSelectedOffice ] = useState<IOffice | null>(null);
 
-	const { selectedTerminal } = useContext(TerminalContext);
+	const [ offices, setOffices ] = useState<IOffice[] | IValueState>(notLoadedState());
 
-	const [ officeForTerminal, setOfficeForTerminal ] = useState<IOffice | IValueState>(notLoadedState());
-
-
-	const loadOfficeByUuid = async (Uuid: string) => {
+	const loadOffices = async () => {
 		try {
-			setOfficeForTerminal(loadingState());
-			const office = await getData<IOffice>(ApiUrl.officeById(Uuid));
-			setOfficeForTerminal(office);
+			setOffices(loadingState());
+			const offices = await getData<IOffice[]>(ApiUrl.offices);
+			setOffices(offices);
 		} catch (err) {
 			console.log(err);
-			setOfficeForTerminal(errorState(null, err));
+			setOffices(errorState(null, err));
 		}
 	};
 
-
+	useEffect(() => {
+		loadOffices();
+	}, []);
 	useEffect(
 		() => {
-			if (isReady(selectedTerminal) && selectedTerminal) {
-				loadOfficeByUuid(selectedTerminal?.officeUuid)
-			}
+			console.log(selectedOffice);
 		},
-		[ selectedTerminal ]
+		[ selectedOffice ]
 	);
 	return (
-		<OfficeContext.Provider value={{ office: officeForTerminal  }}>
+		<OfficeContext.Provider value={{ offices, selectedOffice, setSelectedOffice }}>
 			{children}
 		</OfficeContext.Provider>
 	);
-}
+};

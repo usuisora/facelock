@@ -9,16 +9,17 @@ import MessageCentered from 'partials/MessageCentered';
 import styles from './Terminal.module.scss';
 import { path } from 'constants/routes';
 import { Link } from 'react-router-dom';
+import { CamsContext } from 'contexts/CamsContext';
 
 export default function Terminal() {
-	const { selectedTerminal } = useContext(TerminalContext);
+	const { selectedCamUuid } = useContext(CamsContext);
 
-	return selectedTerminal ? (
+	return selectedCamUuid ? (
 		<div className="container">
 			<div className={styles.terminal}>
 				<h3>Terminal</h3>
 				<TerminalInfo />
-				<Camera camUuid={selectedTerminal.uuid} />
+				<Camera camUuid={selectedCamUuid} />
 			</div>
 		</div>
 	) : (

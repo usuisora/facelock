@@ -2,17 +2,20 @@ import React from 'react';
 import { OtherLogsProvider } from './OtherLogsContext';
 import { AuthLogsProvider } from './AuthLogsContext';
 import { TerminalProvider } from './TerminalContext';
-import OfficeContextProvider from './OfficeContext';
-import WorkerContextProvider, { WorkerContext } from './WorkerContext';
+import { OfficeContextProvider } from './OfficeContext';
+import { WorkerContextProvider } from './WorkerContext';
+import { CamsContextProvider } from './CamsContext';
 
 export const RootContextProvider = ({ children }) => (
-	<TerminalProvider>
+	<CamsContextProvider>
 		<OfficeContextProvider>
-			<WorkerContextProvider>
-				<OtherLogsProvider>
-					<AuthLogsProvider>{children}</AuthLogsProvider>
-				</OtherLogsProvider>
-			</WorkerContextProvider>
+			<TerminalProvider>
+				<WorkerContextProvider>
+					<OtherLogsProvider>
+						<AuthLogsProvider>{children}</AuthLogsProvider>
+					</OtherLogsProvider>
+				</WorkerContextProvider>
+			</TerminalProvider>
 		</OfficeContextProvider>
-	</TerminalProvider>
+	</CamsContextProvider>
 );

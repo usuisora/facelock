@@ -1,10 +1,10 @@
-import React, { useState, createContext ,useContext,useEffect} from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 import { IAuthLog } from '../types/AuthLog.type';
 import { isValueState, IValueState, notLoadedState, loadingState, errorState, isReady } from 'util/valueState';
 
 import { ApiUrl } from 'constants/apiEndpoints';
 import { getData } from '../modules/api';
-import { TerminalContext } from './TerminalContext';
+import { OfficeContext } from './OfficeContext';
 
 interface IState {
 	authLogs: IAuthLog[] | IValueState;
@@ -19,16 +19,18 @@ type IContextProps = IState & IActions;
 
 export const AuthLogsContext = createContext<Partial<IContextProps>>({});
 
-export function AuthLogsProvider({ children }) {
-	const {selectedTerminal} = useContext(TerminalContext)
-
+export const AuthLogsProvider = ({ children }) => {
+	const { selectedOffice } = useContext(OfficeContext);
 	const [ authLogs, setAuthLogs ] = useState<IAuthLog[] | IValueState>(notLoadedState());
 
 	const addAuthLog = (newAuthLog: IAuthLog) => {
 		isValueState(authLogs) ? setAuthLogs([ newAuthLog ]) : setAuthLogs([ ...(authLogs as IAuthLog[]), newAuthLog ]);
 	};
 
-	const loadAuthLogs = async (officeUuid) => {
+	const loadAuthLogs = async (officeUuid: string) => {
+		if (!officeUuid) {
+			return;
+		}
 		try {
 			setAuthLogs(loadingState());
 			const authLogs = await getData<IAuthLog[]>(ApiUrl.authLogsByOfficeId(officeUuid));
@@ -38,14 +40,15 @@ export function AuthLogsProvider({ children }) {
 		}
 	};
 
+	useEffect(
+		() => {
+			if (selectedOffice) {
+				loadAuthLogs(selectedOffice.uuid);
+			}
+		},
+		[ selectedOffice ]
+	);
 
-	useEffect(() => {
-		if( isReady(selectedTerminal) ){
-			loadAuthLogs(selectedTerminal?.officeUuid)
-		}
-		
-	}, [selectedTerminal])
-	
 	return (
 		<AuthLogsContext.Provider
 			value={{
@@ -57,4 +60,4 @@ export function AuthLogsProvider({ children }) {
 			{children}
 		</AuthLogsContext.Provider>
 	);
-}
+};

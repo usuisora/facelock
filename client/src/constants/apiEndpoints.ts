@@ -17,7 +17,7 @@ export const ApiUrl = {
 	authLogsByOfficeId: (uuid) => `auth-logs/${uuid}`,
 
 	terminals: `terminals/`,
-	terminalById: (uuid) => `terminals/${uuid}`,
+	terminalsByParams: (params) => `terminals/${params} `,
 
 	activate: `users/activate/`,
 	settings: `settings/`

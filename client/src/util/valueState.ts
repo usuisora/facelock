@@ -9,16 +9,16 @@ export enum ValueState {
     _status: ValueState;
     _error?: any;
   }
-  export const isValueState = value =>  value?._status 
+  export const isValueState =( value  ) : boolean=>  value?._status 
 
-  export const didNotStartLoading = value => value?._status === ValueState.neverLoaded;
+  export const didNotStartLoading =( value) : boolean => value?._status === ValueState.neverLoaded;
   
-  export const isLoading = value => value?._status === ValueState.loading;
+  export const isLoading = (value) : boolean=> value?._status === ValueState.loading;
   
-  export const isError = value => value?._error;
+  export const isError = (value): boolean => value?._error;
   
 
-  export const isReady = value => {
+  export const isReady = (value ) :boolean=> {
     return !(
       value &&
       (value._status === ValueState.neverLoaded ||
@@ -27,7 +27,7 @@ export enum ValueState {
     );
   };
   
-  export const isResolved = value => isReady(value) || isError(value);
+  export const isResolved = (value): boolean => isReady(value) || isError(value);
   
   export const notLoadedState = () => ({
     _status: ValueState.neverLoaded,

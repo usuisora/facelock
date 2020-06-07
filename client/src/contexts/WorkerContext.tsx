@@ -22,14 +22,14 @@ type IContextProps = IState & IActions;
 
 export const WorkerContext = createContext<Partial<IContextProps>>({});
 
-export default function WorkerContextProvider({ children }) {
+export const WorkerContextProvider = ({ children }) => {
 	const [ workers, setWorkers ] = useState<IWorker[] | IValueState>(notLoadedState);
-	const { office } = useContext(OfficeContext);
+	const { selectedOffice } = useContext(OfficeContext);
 
-	const loadWorkers = async (officeUuid) => {
+	const loadWorkersByOfficeUuid = async (office_uuid: string) => {
 		try {
 			setWorkers(loadingState());
-			const nWorkers = await getData<IWorker[]>(ApiUrl.workers, { officeUuid });
+			const nWorkers = await getData<IWorker[]>(ApiUrl.workers, { office_uuid });
 			setWorkers([ ...nWorkers ]);
 		} catch (err) {
 			console.log(err);
@@ -52,11 +52,11 @@ export default function WorkerContextProvider({ children }) {
 
 	useEffect(
 		() => {
-			if (isReady(office) && office) {
-				loadWorkers(office);
+			if (selectedOffice && isReady(selectedOffice)) {
+				loadWorkersByOfficeUuid(selectedOffice.uuid);
 			}
 		},
-		[ office ]
+		[ selectedOffice ]
 	);
 	return <WorkerContext.Provider value={{ workers, addWorkerToOffice }}>{children}</WorkerContext.Provider>;
-}
+};

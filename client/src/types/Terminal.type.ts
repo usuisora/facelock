@@ -1,4 +1,5 @@
 export interface ITerminal {
 	uuid: string;
-	officeUuid: string;
+	office_uuid: string;
+	cam_uuid: string;
 }

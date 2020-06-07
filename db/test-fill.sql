@@ -1,26 +1,29 @@
-insert into Worker(name, last_name, phone, office_id, face_descriptor)
+insert into Worker(uuid, name, last_name, phone, office_id, face_descriptor)
 values ('Test',
         'test',
         'nophone',
-        1,
+        'o1',
         'test-no-descriptor-12312312412'),('Test2',
                                            'test2',
                                            'nophone2',
-                                           2,
+                                           'o2',
                                            'testface2');
 
 
-insert into Guard (name, last_name, phone,PASSWORD, face_descriptor)
-VALUES ('TestGuard',
+insert into Guard (uuid, name, last_name, phone,PASSWORD, face_descriptor)
+VALUES ('g1',
+        'TestGuard',
         'Smith',
         'noguardphone',
-        'gpass' 'gfaceid')
-insert into other_event(message, moment, terminal_id)
-values ('no massage',
+        'gpass' 'gfaceid');
+
+
+insert into other_event(message, moment, terminal_uuid)
+values (' Результат возвращает промис, содержащий поток, который  состоит из треков (дорожек), содержащих требуемые медиа типы',
         LOCALTIMESTAMP,
-        1)
-insert into login_event(terminal_id, moment,face_descriptor, success)
-values (1,
+        't2')
+insert into login_event(terminal_uuid, moment,face_descriptor, success)
+values ('t2',
         LOCALTIMESTAMP,
-        'face2988821',
+        'face298882AS1',
         True)

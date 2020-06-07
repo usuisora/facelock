@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { ITerminal } from '../types/Terminal.type';
 import {
 	isValueState,
@@ -11,86 +11,97 @@ import {
 } from 'util/valueState';
 import { ApiUrl } from 'constants/apiEndpoints';
 import { getData, updateData, postData } from '../modules/api';
-
+import { CamsContext } from './CamsContext';
+import { OfficeContext } from './OfficeContext';
+import { v4 as uuidv4 } from 'uuid';
 interface IState {
-	selectedTerminal: ITerminal | null;
-	terminals: ITerminal[] | IValueState;
+	terminalUuid: string | IValueState;
 }
 
-interface IActions {
-	registrateTerminal: (terminalUuid: string, officeUuid: string) => void;
-	loadTerminals: (camUuids: string[]) => void;
-}
+interface IActions {}
 
 type IContextProps = IState & IActions;
 
 export const TerminalContext = createContext<Partial<IContextProps>>({});
 
 export function TerminalProvider({ children }) {
-	const [ camUuids, setCamUuids ] = useState<string[] | IValueState>(notLoadedState()); // camera set
-	const [ terminals, setTerminals ] = useState<ITerminal[] | IValueState>(notLoadedState());
-	const [ selectedTerminal, setSelectedTerminal ] = useState<ITerminal | null>({
-		uuid: 'adasdasdassd1',
-		officeUuid:'1'
-	});
+	const { selectedOffice } = useContext(OfficeContext);
+	const { selectedCamUuid } = useContext(CamsContext);
 
-	const getCameraDevicesIds = () =>
-		navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
-			return devices.filter((dev) => dev.kind === 'videoinput').map((cam) => cam.deviceId);
-		});
+	const [ terminalUuid, setTerminalUuid ] = useState<string | IValueState>(notLoadedState());
 
-	const loadTerminals = async (Uuids: string[]) => {
+	// const {camUuids} = useContext(CamsContext)
+
+	// const loadTerminals = async (camUuids) => {
+	// 	try {
+	// 		setTerminals(loadingState());
+	// 		const terminals = await getData<ITerminal[]>(ApiUrl.terminals, { uuids : (camUuids as string[]).join('+') });
+	// 		setTerminals(terminals);
+	// 	} catch (err) {
+	// 		console.log(err);
+	// 		setTerminals(errorState(null, err));
+	// 	}
+	// };
+
+	// const registrateTerminal = (terminalUuid: string, officeUuid: string) => {
+	// 	const newTerminal: ITerminal = { uuid: terminalUuid, officeUuid: officeUuid };
+	// 	postData(ApiUrl.terminals, newTerminal);
+	// 	setTerminals([ ...(terminals as ITerminal[]), newTerminal ]);
+	// };
+
+	// const updateOfficeUuidOfSelectedTerminal = (officeUuid) => {
+	// 	try{
+	// 		if(isReady(selectedTerminal))
+	// 		updateData(ApiUrl.terminalById(selectedTerminal?.uuid), { officeUuid });
+	// 		setSelectedTerminal({...selectedTerminal, officeUuid} as ITerminal)
+	// 	}
+	// 	catch(err){
+	// 		console.error(err)
+	// 	}
+	// };
+	const postTerminal = async (cam_uuid: string, office_uuid: string) => {
 		try {
-			setTerminals(loadingState());
-			const terminals = await getData<ITerminal[]>(ApiUrl.terminals, { camUuids });
-			setTerminals(terminals);
+			await postData(ApiUrl.terminals, {
+				uuid: uuidv4(),
+				cam_uuid,
+				office_uuid
+			} as ITerminal);
+			loadTerminalUuid(cam_uuid, office_uuid);
 		} catch (err) {
-			console.log(err);
-			setTerminals(errorState(null, err));
+			console.error(err);
 		}
 	};
-
-	const updateCamUuids = () =>
-		getCameraDevicesIds().then((camUuids) => {
-			setCamUuids(camUuids);
-		});
-
-	const registrateTerminal = (terminalUuid: string, officeUuid: string) => {
-		const newTerminal: ITerminal = { uuid: terminalUuid, officeUuid: officeUuid };
-		postData(ApiUrl.terminals, newTerminal);
-		setTerminals([ ...(terminals as ITerminal[]), newTerminal ]);
-	};
-
-	const updateOfficeUuidOfSelectedTerminal = (officeUuid) => {
-		try{
-			if(isReady(selectedTerminal))
-			updateData(ApiUrl.terminalById(selectedTerminal?.uuid), { officeUuid });
-			setSelectedTerminal({...selectedTerminal, officeUuid} as ITerminal)
-		}
-		catch(err){
-			console.error(err)
+	const loadTerminalUuid = async (cam_uuid, office_uuid) => {
+		try {
+			setTerminalUuid(loadingState());
+			let terminals = await getData<ITerminal[]>(ApiUrl.terminals, { cam_uuid, office_uuid });
+			if (!terminals.length) {
+				await postTerminal(cam_uuid, office_uuid);
+				terminals = await getData<ITerminal[]>(ApiUrl.terminals, {
+					cam_uuid,
+					office_uuid
+				});
+			}
+			setTerminalUuid(terminals[0].uuid);
+		} catch (err) {
+			console.error(err);
+			setTerminalUuid(errorState(null, err));
 		}
 	};
-
-	useEffect(() => {
-		updateCamUuids();
-	}, []);
 
 	useEffect(
 		() => {
-			if (isReady(camUuids)) {
-				loadTerminals(camUuids as string[]);
+			if (selectedCamUuid && selectedOffice) {
+				loadTerminalUuid(selectedCamUuid, selectedOffice!.uuid);
 			}
 		},
-		[ camUuids ]
+		[ selectedCamUuid, selectedOffice ]
 	);
 
 	return (
 		<TerminalContext.Provider
 			value={{
-				selectedTerminal,
-				terminals,
-				registrateTerminal
+				terminalUuid
 			}}
 		>
 			{children}

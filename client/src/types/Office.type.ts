@@ -9,3 +9,4 @@ export interface IOffice {
 	open: boolean;
 	floor: number;
 }
+

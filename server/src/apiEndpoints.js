@@ -14,6 +14,7 @@ module.exports = {
 	authLogs: '/auth-logs/',
 	authLogsByOfficeUuid: '/auth-logs/:officeUuid',
 	terminals: '/terminals/',
+	terminalsByParams: '/terminals/:cam_uuid&:office_uuid',
 	activate: '/users/activate/',
 	settings: '/settings/'
 };

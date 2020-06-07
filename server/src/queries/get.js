@@ -6,14 +6,16 @@ const getAuthLogsByOfficeUuid = (request, response) => {
 	const officeUuid = parseInt(request.params.officeUuid);
 
 	pool.query(
-		`select login_event.face_descriptor , moment, success, worker.id as worker_id from login_event
-		join terminal on terminal.id  = login_event.terminal_id
+		`select login_event.face_descriptor , moment, success, worker.uuid as worker_uuid from login_event
+		join terminal on terminal.uuid  = login_event.terminal_uuid
+		join office on terminal.office_uuid = office.uuid
+		
 		full join worker on login_event.face_descriptor = worker.face_descriptor 
-		where terminal.office_id = $1`,
+		where terminal.office_uuid = $1`,
 		[ officeUuid ],
 		(error, results) => {
 			if (error) {
-				throw error;
+				response.status(404);
 			}
 			response.status(200).json(results.rows);
 		}
@@ -21,15 +23,13 @@ const getAuthLogsByOfficeUuid = (request, response) => {
 };
 
 const getOtherLogsByOfficeUuid = (request, response) => {
-	console.log(request.params);
 	const officeUuid = parseInt(request.params.officeUuid);
-	console.log('rere');
 	pool.query(
-		'select * from other_event join terminal on terminal.id = other_event.terminal_id where terminal.office_id = $1',
+		'select * from other_event join terminal on terminal.uuid = other_event.terminal_uuid where terminal.office_uuid = $1',
 		[ officeUuid ],
 		(error, results) => {
 			if (error) {
-				throw error;
+				response.status(404);
 			}
 			response.status(200).json(results.rows);
 		}
@@ -62,12 +62,29 @@ const getOffices = (request, response) => {
 	});
 }; // checked
 
-const getWorkerByFaceDescriptor = (request, response) => {
-	const { face_descriptor } = request.body();
+const getTerminals = (request, response) => {
+	const { cam_uuid, office_uuid } = request.query;
+
+	// console.log(cam_uuid, office_uuid);
+
 	pool.query(
-		`select id, name, last_name, phone_number, office_id from worker where face_descriptor = $1`,
-		[ face_descriptor ],
-		(error, result) => {
+		'select * from terminal where cam_uuid = $1 and  office_uuid = $2',
+		[ cam_uuid, office_uuid ],
+		(error, results) => {
+			if (error) {
+				throw error;
+			}
+			// console.log(results.rows);
+			response.status(200).json(results.rows);
+		}
+	);
+};
+const getWorkersByOfficeUuid = (request, response) => {
+	const { office_uuid } = request.params;
+	pool.query(
+		`select uuid, name, last_name, phone , office_uuid from worker where office_uuid = $1`,
+		[ office_uuid ],
+		(error, results) => {
 			if (error) {
 				throw error;
 			}
@@ -77,17 +94,21 @@ const getWorkerByFaceDescriptor = (request, response) => {
 	);
 }; //checked
 
-const getTerminalById = (request, response) => {
-	const id = parseInt(request.params.id);
-	pool.query(`select *  from terminal where id = $1`, [ id ], (error, result) => {
-		if (error) {
-			throw error;
-		}
+const getWorkerByFaceDescriptor = (request, response) => {
+	const { face_descriptor } = request.body();
+	pool.query(
+		`select id, name, last_name, phone_number, office_id from worker where face_descriptor = $1`,
+		[ face_descriptor ],
+		(error, results) => {
+			if (error) {
+				throw error;
+			}
 
-		response.status(200).json(results.rows);
-	});
-};
-//getTe
+			response.status(200).json(results.rows);
+		}
+	);
+}; //checked
+
 const getVarifiedAsGuard = (request, response) => {
 	const password = parseInt(request.body.password);
 
@@ -131,7 +152,7 @@ const getCheckWorker = (request, response) => {
 			where ( worker.face_descriptor = $1 and terminal.id = $2);
 			`,
 		[ faceDescriptor, terminalId ],
-		(error, result) => {
+		(error, results) => {
 			if (error) {
 				throw error;
 			}
@@ -150,7 +171,6 @@ const getCheckGuard = (request, response) => {
 			if (error) {
 				throw error;
 			}
-
 			response.status(200).json(results.rows);
 		}
 	);
@@ -158,5 +178,8 @@ const getCheckGuard = (request, response) => {
 
 module.exports = {
 	getOtherLogsByOfficeUuid,
-	getAuthLogsByOfficeUuid
+	getAuthLogsByOfficeUuid,
+	getOffices,
+	getTerminals,
+	getWorkersByOfficeUuid
 };

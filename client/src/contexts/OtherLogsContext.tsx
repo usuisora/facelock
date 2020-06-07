@@ -1,12 +1,11 @@
-import React, { createContext, useState, useContext,useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { IOtherLog } from 'types/otherLog.type';
-import { IValueState, notLoadedState, loadingState, errorState, isValueState,isReady } from 'util/valueState';
+import { IValueState, notLoadedState, loadingState, errorState, isValueState, isReady } from 'util/valueState';
 import { ApiUrl } from 'constants/apiEndpoints';
 import { getData, postData } from '../modules/api';
 import Moment from 'moment';
 import { v1 as uuidv1 } from 'uuid';
-import { TerminalContext } from './TerminalContext';
-import { ITerminal } from 'types/Terminal.type';
+import { OfficeContext } from './OfficeContext';
 
 interface IState {
 	otherLogs: IOtherLog[] | IValueState;
@@ -14,18 +13,20 @@ interface IState {
 
 interface IActions {
 	loadOtherLogs: (termUuid: string) => void;
-	addOtherLog: (message: string) => void;
+	addOtherLog: (message: string, terminalUuid: string) => void;
 }
 
 type IContextProps = IState & IActions;
 export const OtherLogsContext = createContext<Partial<IContextProps>>({});
 
 export function OtherLogsProvider({ children }) {
-	const { selectedTerminal } = useContext(TerminalContext);
-
+	const { selectedOffice } = useContext(OfficeContext);
 	const [ otherLogs, setOtherLogs ] = useState<IOtherLog[] | IValueState>(notLoadedState());
 
 	const loadOtherLogs = async (officeUuid) => {
+		if (!officeUuid) {
+			return;
+		}
 		try {
 			setOtherLogs(loadingState());
 			const otherLogs = await getData<IOtherLog[]>(ApiUrl.otherLogsByOfficeId(officeUuid));
@@ -36,28 +37,29 @@ export function OtherLogsProvider({ children }) {
 		}
 	};
 
-	const addOtherLog = (message) => {
+	const addOtherLog = (message: string, terminalUuid: string) => {
 		const moment = Moment().format();
 
 		const newOtherLog: IOtherLog = {
 			moment,
 			message,
-			terminalUuid: (selectedTerminal as ITerminal).uuid,
+			terminalUuid
 		};
-		
+
 		isValueState(otherLogs)
 			? setOtherLogs([ newOtherLog ])
 			: setOtherLogs([ ...(otherLogs as IOtherLog[]), newOtherLog ]);
 		postData(ApiUrl.otherLogs, newOtherLog);
 	};
 
-	useEffect(() => {
-		debugger
-		if( isReady(selectedTerminal) ){
-			loadOtherLogs(selectedTerminal?.officeUuid)
-		}
-		
-	}, [selectedTerminal])
+	useEffect(
+		() => {
+			if (selectedOffice) {
+				loadOtherLogs(selectedOffice.uuid);
+			}
+		},
+		[ selectedOffice ]
+	);
 
 	return (
 		<OtherLogsContext.Provider value={{ otherLogs, loadOtherLogs, addOtherLog }}>
@@ -65,4 +67,3 @@ export function OtherLogsProvider({ children }) {
 		</OtherLogsContext.Provider>
 	);
 }
-
