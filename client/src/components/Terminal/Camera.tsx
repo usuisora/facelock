@@ -9,7 +9,9 @@ import { isValueState, didNotStartLoading, isReady } from 'util/valueState';
 import { IOffice } from 'types/Office.type';
 import { ITerminal } from 'types/Terminal.type';
 import MessageCentered from 'partials/MessageCentered';
+import { loadModels } from 'util/faceApiUtil';
 
+import styles from './Terminal.module.scss';
 const getStreamByCamUuid = (camUuid: string): Promise<MediaStream> =>
 	navigator.mediaDevices.getUserMedia({
 		video: {
@@ -23,7 +25,7 @@ interface IOuterProps {
 
 const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 	const [ mediaStream, setMediaStream ] = useState<MediaStream | null>(null);
-
+	const [ modelsLoaded, setModelsLoaded ] = useState<boolean>(false);
 	const videoRef = useRef<HTMLVideoElement>(null);
 
 	const canvasPicWebCam = useRef<HTMLCanvasElement>(null);
@@ -43,9 +45,10 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 		}
 	};
 
-	const handlePlay = () => {
+	const handlePlay = async () => {
 		const canvas = canvasPicWebCam.current;
 		const displaySize = { width: videoRef.current!.width, height: videoRef.current!.height };
+		await loadModels();
 		faceapi.matchDimensions(canvas as faceapi.IDimensions, displaySize);
 		setInterval(async () => {
 			if (!canvas) {
@@ -87,23 +90,33 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 			}
 			return () => (mounted = false);
 		},
-		[ mediaStream ]
+		[ mediaStream, loadModels ]
 	);
 
+	useEffect(() => {
+		loadModels().then(() => {
+			setModelsLoaded(false);
+		});
+	}, []);
+
 	return (
-		<div className="camera">
-			<video
-				id={camUuid}
-				ref={videoRef}
-				width={WIDTH}
-				height={HEIGHT}
-				onPlay={handlePlay}
-				onCanPlay={() => videoRef.current!.play()}
-				autoPlay
-				playsInline
-				muted
-			/>
-			<canvas ref={canvasPicWebCam} />
+		<div className="center">
+			<div className={styles.camera}>
+				{modelsLoaded && <h6 className="orange-text center ">loading models...</h6>}
+				<video
+					id={camUuid}
+					ref={videoRef}
+					width={WIDTH}
+					height={HEIGHT}
+					onPlay={handlePlay}
+					onCanPlay={() => videoRef.current!.play()}
+					autoPlay
+					playsInline
+					muted
+					className="center"
+				/>
+				<canvas className="center" ref={canvasPicWebCam} />
+			</div>
 		</div>
 	);
 };
