@@ -80,7 +80,7 @@ const getTerminals = (request, response) => {
 	);
 };
 const getWorkersByOfficeUuid = (request, response) => {
-	const { office_uuid } = request.params;
+	const { office_uuid } = request.query;
 	pool.query(
 		`select uuid, name, last_name, phone , office_uuid from worker where office_uuid = $1`,
 		[ office_uuid ],

@@ -1,15 +1,7 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
-
-import { OfficeContext } from '../../contexts/OfficeContext';
-import { TerminalContext } from '../../contexts/TerminalContext';
-
 import * as faceapi from 'face-api.js';
-import Info from '../Info';
-import { isValueState, didNotStartLoading, isReady } from 'util/valueState';
-import { IOffice } from 'types/Office.type';
-import { ITerminal } from 'types/Terminal.type';
 import MessageCentered from 'partials/MessageCentered';
-import { loadFaceApiModels, getFaceDetection } from 'util/faceApiUtil';
+import {  getFaceDetection } from 'util/faceApiUtil';
 
 import styles from './Terminal.module.scss';
 import { FaceApiContext } from 'contexts/FaceApiContext';
@@ -82,6 +74,7 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 		const canvas = canvasPicWebCam.current;
 			if(canvas){
 				if ( detection && detection?.detection.box.height > 150) {
+					
 					drawDetections();
 				}
 				else {

@@ -44,12 +44,12 @@ export const OfficeContextProvider = ({ children }) => {
 	useEffect(() => {
 		loadOffices();
 	}, []);
-	useEffect(
-		() => {
-			console.log(selectedOffice);
-		},
-		[ selectedOffice ]
-	);
+
+	// useEffect(
+	// 	() => {
+	// 	},
+	// 	[ selectedOffice ]
+	// );
 	return (
 		<OfficeContext.Provider value={{ offices, selectedOffice, setSelectedOffice }}>
 			{children}

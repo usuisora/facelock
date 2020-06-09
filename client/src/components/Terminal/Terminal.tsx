@@ -16,8 +16,6 @@ export default function Terminal() {
 	return selectedCamUuid ? (
 		<div className="container">
 			<div className={styles.terminal}>
-				<h3>Terminal</h3>
-
 				<div className="card white  lighten-2">
 					<div className="card-content">
 						<Camera camUuid={selectedCamUuid} />

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, FormEvent, ChangeEvent } from 'react';
 import MyDropzone from './Dropzone';
-import { createLabeledDescriptor } from '../util/faceMatcher';
+import { createLabeledDescriptor } from '../../util/faceMatcher';
 // @ts-ignore
 import placeholder from '../media/placeholder.png';
 
@@ -10,9 +10,9 @@ interface IForm {
 	id: string;
 }
 
-interface IState  {
+interface IState {
 	isSubmitted: boolean;
-	isImage: boolean
+	isImage: boolean;
 }
 
 const stateDef: IForm = {
@@ -21,10 +21,7 @@ const stateDef: IForm = {
 	id: ''
 };
 
-
-
-function AddEmployeeForm() {
-
+function AddWorker() {
 	const [ isSubmitted, setIsSubmitted ] = useState(false);
 
 	const [ failed, setFailed ] = useState({
@@ -37,7 +34,6 @@ function AddEmployeeForm() {
 	const [ password, setPassword ] = useState<string>('');
 
 	const [ state, setState ] = useState<IForm>({ ...stateDef });
-
 
 	const handleChange = (e: ChangeEvent) => {
 		//@ts-ignore
@@ -113,4 +109,4 @@ function AddEmployeeForm() {
 	);
 }
 
-export default AddEmployeeForm;
+export default AddWorker;
