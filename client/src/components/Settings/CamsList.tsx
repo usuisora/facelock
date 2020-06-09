@@ -20,7 +20,7 @@ export default function CamsList() {
 			<h4 className="grey-text">Available cams id</h4>
 
 			{(camUuids as string[]).map((camUuid) => (
-				<ul className={styles.row}>
+				<ul key={camUuid} className={styles.row}>
 					<li className={styles.left}>{camUuid} </li>
 					<li className={styles.action}>
 						<button

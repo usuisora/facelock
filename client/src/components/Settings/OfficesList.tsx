@@ -18,7 +18,7 @@ export default function OfficesList() {
 		<div className={styles.termilList}>
 			<h4 className="grey-text">Available Offices</h4>
 			{(offices as IOffice[]).map((office: IOffice) => (
-				<div className={styles.row}>
+				<div   key  = {office.uuid} className={styles.row}>
 					<ul className={styles.left}>
 						<li>{office.uuid} </li>
 						<li>{office.name} </li>

@@ -5,17 +5,20 @@ import { TerminalProvider } from './TerminalContext';
 import { OfficeContextProvider } from './OfficeContext';
 import { WorkerContextProvider } from './WorkerContext';
 import { CamsContextProvider } from './CamsContext';
+import { FaceApiContextProvider } from './FaceApiContext';
 
 export const RootContextProvider = ({ children }) => (
-	<CamsContextProvider>
-		<OfficeContextProvider>
-			<TerminalProvider>
-				<WorkerContextProvider>
-					<OtherLogsProvider>
-						<AuthLogsProvider>{children}</AuthLogsProvider>
-					</OtherLogsProvider>
-				</WorkerContextProvider>
-			</TerminalProvider>
-		</OfficeContextProvider>
-	</CamsContextProvider>
+	<FaceApiContextProvider>
+		<CamsContextProvider>
+			<OfficeContextProvider>
+				<TerminalProvider>
+					<WorkerContextProvider>
+						<OtherLogsProvider>
+							<AuthLogsProvider>{children}</AuthLogsProvider>
+						</OtherLogsProvider>
+					</WorkerContextProvider>
+				</TerminalProvider>
+			</OfficeContextProvider>
+		</CamsContextProvider>
+	</FaceApiContextProvider>
 );

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react';
 import CameraFactory from 'components/Terminal/CameraFactory';
-import { loadModels } from 'util/faceApiUtil';
 import { TerminalContext } from '../../contexts/TerminalContext';
 import Camera from './Camera';
 import TerminalInfo from './TerminalInfo';
@@ -18,8 +17,16 @@ export default function Terminal() {
 		<div className="container">
 			<div className={styles.terminal}>
 				<h3>Terminal</h3>
+
+				<div className="card white  lighten-2">
+					<div className="card-content">
+						<Camera camUuid={selectedCamUuid} />
+					</div>
+				</div>
+				<Link to={path.settings} className="waves-effect  black  waves-light btn">
+					Change terminal
+				</Link>
 				<TerminalInfo />
-				<Camera camUuid={selectedCamUuid} />
 			</div>
 		</div>
 	) : (

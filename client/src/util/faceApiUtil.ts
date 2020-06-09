@@ -1,56 +1,47 @@
 import * as faceapi from 'face-api.js';
 const MODEL_URL = '/models';
-export const loadModels = async () => {
-	// // load the models
-	// await faceapi.loadMtcnnModel('/');
-	// await faceapi.loadFaceRecognitionModel('/');
 
-	// await faceapi.loadSsdMobilenetv1Model('/');
-	// await faceapi.loadFaceLandmarkTinyModel('/');
-	// await faceapi.loadFaceRecognitionModel('/');
-
-	// await Promise.all([
-	// 	faceapi.nets.ssdMobilenetv1.loadFromUri('./models'),
-	// 	// faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-	// 	faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-	// 	faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-	// 	faceapi.nets.faceExpressionNet.loadFromUri('/models')
-	// ]);
-
+export async function loadFaceApiModels() {
 	//await faceapi.loadModels(MODEL_URL)
 	await faceapi.loadFaceDetectionModel(MODEL_URL);
 	await faceapi.loadFaceLandmarkModel(MODEL_URL);
 	await faceapi.loadFaceRecognitionModel(MODEL_URL);
-	await faceapi.loadFaceExpressionModel(MODEL_URL);
+}
+
+export const loadFaceApiModels2 = async () => {
+	// // load the models
+	// await Promise.all([ faceapi.loadMtcnnModel(MODEL_URL), faceapi.loadFaceRecognitionModel(MODEL_URL) ]);
+	// await Promise.all([
+	// 	faceapi.loadM(MODEL_URL),
+	// 	faceapi.loadFaceLandmarkTinyModel(MODEL_URL),
+	// 	faceapi.loadFaceRecognitionModel(MODEL_URL)
+	// ]);
+	// await Promise.all([
+	// 	faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+	// 	// faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+	// 	faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+	// 	faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+	// 	faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
+	// ]);
+	// await faceapi.loadModels(MODEL_URL)
+	// await Promise.all([
+	// 	faceapi.loadFaceDetectionModel(MODEL_URL),
+	// 	faceapi.loadFaceLandmarkModel(MODEL_URL),
+	// 	faceapi.loadFaceRecognitionModel(MODEL_URL)
+	// faceapi.loadFaceExpressionModel(MODEL_URL),
+	// faceapi.loadAgeGenderModel(MODEL_URL)
+	// ]);
 };
-// export const getFullFaceDescription = async (canvas) => {
-//     console.log(canvas);
-//     this.fullFaceDescriptions = await faceapi.allFaces(canvas, minConfidence);
-//     console.log(this.fullFaceDescriptions);
-//   }
+const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320 });
 
-//   export const drawDescription = (canvas) => {
-//     this.fullFaceDescriptions.forEach((fd, i) => {
-//       faceapi.drawLandmarks(canvas, fd.landmarks, { drawLines: false })
-//     })
-//   }
-// export async function getFullFaceDescription(blob, inputSize = 512) {
-// 	// tiny_face_detector options
-// 	let scoreThreshold = 0.5;
-// 	const OPTION = new faceapi.TinyFaceDetectorOptions({
-// 		inputSize,
-// 		scoreThreshold
-// 	});
-// 	const useTinyModel = true;
+export const getFaceDetection = async (input) =>
+	await faceapi.detectSingleFace(input).withFaceLandmarks().withFaceDescriptor();
 
-// 	// fetch image to api
-// 	let img = await faceapi.fetchImage(blob);
+export const getFaceDescriptor = async (blob) => {
+	const img = await faceapi.fetchImage(blob);
+	return faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+};
 
-// 	// detect all faces and generate full description from image
-// 	// including landmark and descriptor of each face
-// 	let fullDesc = await faceapi.detectAllFaces(img, OPTION).withFaceLandmarks(useTinyModel).withFaceDescriptors();
-// 	return fullDesc;
-// }
 // const maxDescriptorDistance = 0.5;
 
 // const mtcnnForwardParams = {
