@@ -20,7 +20,7 @@ export default function WorkersList() {
 				))}
 			</ul>
 			{(workers as IWorker[]).map((worker: IWorker) => (
-				<ul className={styles.row}>
+				<ul key={worker.uuid} className={styles.row}>
 					<li>{worker.uuid}</li>
 					<li>{worker.name}</li>
 					<li>{worker.last_name}</li>

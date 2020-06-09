@@ -14,7 +14,7 @@ function Dropzone({ setPreview }: IDropzoneProps) {
 	return (
 		<div className="dropzone" {...getRootProps()}>
 			<input {...getInputProps()} accept=".jpg, .jpeg, .png, .svg" />
-			{isDragActive ? <p>Drop the image here ...</p> : <p>Drag 'n' drop some image here, or click to select </p>}
+			{isDragActive ? <p>Drop the image here ...</p> : <p>Upload Worker Image</p>}
 		</div>
 	);
 }

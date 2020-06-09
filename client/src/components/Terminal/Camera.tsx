@@ -6,6 +6,7 @@ import {  getFaceDetection } from 'util/faceApiUtil';
 import styles from './Terminal.module.scss';
 import { FaceApiContext } from 'contexts/FaceApiContext';
 import { displaySize } from 'constants/faceApiConst';
+import { useLocation } from 'react-router-dom';
 const getStreamByCamUuid = (camUuid: string): Promise<MediaStream> =>
 	navigator.mediaDevices.getUserMedia({
 		video: {
@@ -31,6 +32,7 @@ type Detection =
 
 const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 	const { modelsLoaded } = useContext(FaceApiContext);
+	const location = useLocation()
 	const [ mediaStream, setMediaStream ] = useState<MediaStream | null>(null);
 	const [ detection, setDetection ] = useState<Detection>();
 	const [ faceClose, setFaceClose ] = useState<boolean>(false);
@@ -48,11 +50,11 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 		}
 	};
 
-	const handlePlay = async () => {
+	const handlePlay = () => {
 		faceapi.matchDimensions(canvasPicWebCam.current as faceapi.IDimensions, displaySize);
 		setInterval(async () => {
-			videoRef.current && setDetection(await getFaceDetection(videoRef.current));
-		}, 300);
+			videoRef.current && setDetection(await getFaceDetection(videoRef.current,));
+		}, 100);
 	};
 
 	const drawDetections = () => {
@@ -63,7 +65,7 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 				const resizedDetection = faceapi.resizeResults(detection, displaySize);
 				//@ts-ignore
 				canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-				faceapi.draw.drawDetections(canvas, resizedDetection);
+				// faceapi.draw.drawDetections(canvas, resizedDetection);
 				faceapi.draw.drawFaceLandmarks(canvas, resizedDetection);
 			 
 		}
@@ -72,9 +74,10 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 	useEffect(
 		() => {
 		const canvas = canvasPicWebCam.current;
-			if(canvas){
-				if ( detection && detection?.detection.box.height > 150) {
-					
+			if(canvas ){
+				if ( detection && detection?.detection.box.height > 190) {
+					// @ts-ignore
+			 		console.log(detection.desctiptor)
 					drawDetections();
 				}
 				else {
@@ -83,30 +86,30 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 					canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 				}
 			}
-		
 		},
 		[ detection ]
 	);
 
 	useEffect(
 		() => {
-			let mounted = true;
-			if (!mediaStream && mounted) {
+			if (!mediaStream ) {
 				enableStream();
-			} else if (mediaStream && videoRef.current && mounted) {
+			} else if (mediaStream && videoRef.current ) {
 				videoRef.current.srcObject = mediaStream;
-			} else if (mediaStream && mounted) {
-				return () => {
-					mediaStream.getTracks().forEach((track) => {
-						track.stop();
-					});
-					mounted = false;
-				};
-			}
-			return () => (mounted = false);
+			} 
 		},
 		[ mediaStream, modelsLoaded ]
 	);
+
+	useEffect(() => {
+		if(mediaStream && location.pathname !== '/'){
+			mediaStream.getTracks().forEach((track) => {
+				track.stop();
+			});
+		}
+		
+	}, [location])
+
 
 	return (
 		<div className="center">
