@@ -94,19 +94,28 @@ const getWorkersByOfficeUuid = (request, response) => {
 	);
 }; //checked
 
-const getWorkerByFaceDescriptor = (request, response) => {
-	const { face_descriptor } = request.body();
-	pool.query(
-		`select id, name, last_name, phone_number, office_id from worker where face_descriptor = $1`,
-		[ face_descriptor ],
-		(error, results) => {
-			if (error) {
-				throw error;
-			}
+const getIsFaceDescriptorInOffice = (request, response) => {
+	const { face_descriptor, office_uuid } = request.query;
 
-			response.status(200).json(results.rows);
+	console.log(request.query);
+	pool.query(`select * from office where uuid = $1`, [ office_uuid ], (error, results) => {
+		if (error) {
+			throw error;
+		} else if (!results.rows.length) {
+			throw Error('no such office');
+		} else {
+			const faceMatcherBlob = results.rows[0].faceMatcher;
+			if (!faceMatcherBlob) {
+				response.status(200).json({ isFound: false });
+			} else {
+				const faceMatcher = JSON.parse(faceMatcherBlob);
+				const bestMatch = faceMatcher.findBestMatch(face_descriptor);
+				console.log(bestMatch.toString());
+			}
 		}
-	);
+
+		response.status(200).json(isFound);
+	});
 }; //checked
 
 const getVarifiedAsGuard = (request, response) => {
@@ -181,5 +190,6 @@ module.exports = {
 	getAuthLogsByOfficeUuid,
 	getOffices,
 	getTerminals,
-	getWorkersByOfficeUuid
+	getWorkersByOfficeUuid,
+	getIsFaceDescriptorInOffice
 };

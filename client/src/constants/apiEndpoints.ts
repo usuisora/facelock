@@ -5,11 +5,11 @@ export const ApiUrl = {
 	workers: `workers/`,
 	workerById: (uuid) => `workers/${uuid}`,
 
-	verifyWorker: `workers/verify`,
+	verifyWorker: `workers/verify/{office_uuid}/?q={descriptor}`,
 	offices: `offices/`,
+	faceMatch: `facematch/`,
 	officeById: (uuid) => `offices/${uuid}`,
-
-	faceMatcherByOfficeUuid: (uuid) => `offices/${uuid}/facematcher/`,
+	faceMatcherByOfficeUuid: (office_uuid) => `/facematcher/${office_uuid}`,
 	otherLogs: `other-logs/`,
 	otherLogsByOfficeId: (uuid) => `other-logs/${uuid}`,
 

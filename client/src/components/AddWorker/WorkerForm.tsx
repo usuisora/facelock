@@ -5,109 +5,90 @@ import { createLabeledDescriptor } from '../../util/faceMatcher';
 import placeholder from '../../media/placeholder.png';
 import { BUTTON_CLASS_NAME } from 'constants/styleConsts';
 import { OfficeContext } from 'contexts/OfficeContext';
-interface IForm {
-	name: string;
-	last_name: string;
-	phone: string;
-}
+import sha256 from 'sha256';
+import { WorkerContext } from 'contexts/WorkerContext';
+import { IWorkerForm, IWorker } from 'types/Worker.type';
+import { getUuid } from 'util/formatUtil';
 
-interface IState {
-	isSubmitted: boolean;
-	isImage: boolean;
-}
-
-const formInitValues: IForm = {
+const formInitValues: IWorkerForm = {
 	name: '',
-	last_name: '',
-	phone: ''
+	lastName: '',
+	phone: '',
+	password: ''
 };
 
 function WorkerForm() {
-	const [ isSubmitted, setIsSubmitted ] = useState(false);
-
-	const [ failed, setFailed ] = useState({
-		image: false,
-		password: false
-	});
-
-	const [ preview, setPreview ] = useState<string>(placeholder);
-
-	const [ password, setPassword ] = useState<string>('');
-
-	const [ workersData, setWorkersData ] = useState<IForm>({ ...formInitValues });
-
 	const { selectedOffice } = useContext(OfficeContext);
 
-	const handleChange = (e: ChangeEvent) => {
-		//@ts-ignore
-		const attr = e.target.placeholder.toLowerCase();
-		//@ts-ignore
+	const { postWorker } = useContext(WorkerContext);
+
+	const [ imageBlob, setImageBlob ] = useState<string>(placeholder);
+
+	const [ failed, setFailed ] = useState(false);
+	const [ workersData, setWorkersData ] = useState<IWorkerForm>({ ...formInitValues });
+
+	const clearForm = () => {
+		setWorkersData(formInitValues);
+		setFailed(false);
+	};
+
+	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const attr = e.target.name;
+		if (attr === 'password') {
+			debugger;
+			setWorkersData({ ...workersData, [attr]: sha256(e.target.value) });
+			return;
+		}
 		setWorkersData({ ...workersData, [attr]: e.target.value });
 	};
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
-		if (password === '123') {
-			const labeledDescriptor = createLabeledDescriptor(workersData.name + ' ' + workersData.last_name, preview);
-			if (!labeledDescriptor) {
-				setFailed({ image: true, password: false });
-				setPreview(placeholder);
-				return;
-			}
-			setIsSubmitted(true);
-			setFailed({ password: false, image: false });
+		debugger;
+		if (!imageBlob || imageBlob === placeholder) {
+			window.alert('Upload the worker image');
+		} else if (workersData.password === sha256('1111')) {
+			const { name, lastName, phone } = workersData;
+			postWorker!({
+				uuid: getUuid(),
+				name,
+				lastName,
+				phone,
+				imageBlob,
+				officeUuid: selectedOffice!.uuid
+			} as IWorker);
+			clearForm();
+			window.alert('Added!');
 		} else {
-			setFailed({ password: true, image: true });
+			setFailed(true);
 		}
-		setPassword('');
 	};
 
-	const clearForm = () => {
-		setIsSubmitted(false);
-		setWorkersData(formInitValues);
-		setPreview(placeholder);
-	};
 	const toCap = (s: string | any[]) => s[0].toUpperCase() + s.slice(1);
 
-	return isSubmitted ? (
-		<div className="add-form container">
-			<h4>Submitted</h4>
-			<button className="  btn  white  black-text left" onClick={clearForm}>
-				Back to form
-			</button>
-		</div>
-	) : (
+	return (
 		<div className="add-form container">
 			<div className="row">
-				<form className="col s5  " onSubmit={handleSubmit}>
-					{Object.keys(workersData).map((s) => (
-						<input key={s} placeholder={toCap(s)} onChange={handleChange} required />
-					))}
-					{failed.image && <p className="sub red-text">Face not found</p>}
-					<MyDropzone setPreview={setPreview} />
-					<div className="row">
-						<div className="col s9">
-							<input
-								type="password"
-								onChange={({ target }) => setPassword(target.value)}
-								placeholder="Admin password"
-								required
-								value={password}
-							/>
-							{failed.password && <p className=" red-text">Password incorrect</p>}
-						</div>
-						<button className={BUTTON_CLASS_NAME}>Add</button>
-					</div>
+				<form className="form col s5  " onSubmit={handleSubmit}>
+					{Object.keys(workersData).map((attr) => {
+						return (
+							<input key={attr} name={attr} placeholder={toCap(attr)} onChange={handleChange} required />
+						);
+					})}
+					<MyDropzone setPreview={setImageBlob} />;
+					<button className={BUTTON_CLASS_NAME}>Add</button>
+					{failed && <p className=" red-text">Password wrong!</p>}
 				</form>
-				<div className="col s4  ">
+
+				<div className="preview col s4  ">
 					<div className="card">
-						<div className="card-title">Preview</div>
 						<div className="card-image">
-							<img src={preview} />
+							<img src={imageBlob} />
 						</div>
 						<div className="card-content">
+							<div className="card-title">Preview</div>
 							<p> {workersData.name}</p>
-							<p> {workersData.last_name}</p>
+							<p> {workersData.lastName}</p>
 							<p> {workersData.phone}</p>
 						</div>
 					</div>

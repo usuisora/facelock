@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { TerminalContext } from './TerminalContext';
 
-import { IWorker } from 'types/Worker.type';
+import { IWorker, IWorkerForm } from 'types/Worker.type';
 import { IOffice } from 'types/Office.type';
 import { IValueState, notLoadedState, isValueState, loadingState, errorState, isReady } from 'util/valueState';
 
@@ -15,7 +15,7 @@ interface IState {
 
 interface IActions {
 	loadWorkersByTerminalUuid: (terminalUuid: string) => Promise<void>;
-	addWorkerToOffice: (worker: IWorker) => void;
+	postWorker: (worker: IWorker) => void;
 }
 
 type IContextProps = IState & IActions;
@@ -37,7 +37,7 @@ export const WorkerContextProvider = ({ children }) => {
 		}
 	};
 
-	const addWorkerToOffice = (worker: IWorker) => {
+	const postWorker = (worker: IWorker) => {
 		try {
 			if (!worker.imageBlob || !worker.imageBlob.length) {
 				throw new Error('No image blob provided! ');
@@ -58,5 +58,5 @@ export const WorkerContextProvider = ({ children }) => {
 		},
 		[ selectedOffice ]
 	);
-	return <WorkerContext.Provider value={{ workers, addWorkerToOffice }}>{children}</WorkerContext.Provider>;
+	return <WorkerContext.Provider value={{ workers, postWorker }}>{children}</WorkerContext.Provider>;
 };

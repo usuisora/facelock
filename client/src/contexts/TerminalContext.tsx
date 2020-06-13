@@ -13,7 +13,7 @@ import { ApiUrl } from 'constants/apiEndpoints';
 import { getData, updateData, postData } from '../modules/api';
 import { CamsContext } from './CamsContext';
 import { OfficeContext } from './OfficeContext';
-import { v4 as uuidv4 } from 'uuid';
+import { getUuid } from 'util/formatUtil';
 interface IState {
 	terminalUuid: string | IValueState;
 }
@@ -62,7 +62,7 @@ export function TerminalProvider({ children }) {
 	const postTerminal = async (cam_uuid: string, office_uuid: string) => {
 		try {
 			await postData(ApiUrl.terminals, {
-				uuid: uuidv4(),
+				uuid: getUuid(),
 				cam_uuid,
 				office_uuid
 			} as ITerminal);

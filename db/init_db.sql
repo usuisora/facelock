@@ -32,9 +32,10 @@ CREATE TABLE Guard (uuid Text NOT NULL,
 CREATE TABLE Office (uuid Text NOT NULL,
                                name Text NOT NULL,
                                          Business_center_id Integer NOT NULL DEFAULT 1 REFERENCES Business_center(id),
-                                                                                                  open Boolean NOT NULL DEFAULT false,
-                                                                                                                                floor integer UNIQUE NOT NULL,
-                                                                                                                                                     PRIMARY KEY (uuid));
+                                                                                                  face_matcher Text UNIQUE DEFAULT NULL,
+                                                                                                                                   open Boolean NOT NULL DEFAULT false,
+                                                                                                                                                                 floor integer UNIQUE NOT NULL,
+                                                                                                                                                                                      PRIMARY KEY (uuid));
 
 ;
 

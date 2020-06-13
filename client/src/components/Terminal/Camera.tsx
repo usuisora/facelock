@@ -7,6 +7,8 @@ import styles from './Terminal.module.scss';
 import { FaceApiContext } from 'contexts/FaceApiContext';
 import { displaySize } from 'constants/faceApiConst';
 import { useLocation } from 'react-router-dom';
+import { BUTTON_CLASS_NAME } from 'constants/styleConsts';
+import { OfficeContext } from 'contexts/OfficeContext';
 const getStreamByCamUuid = (camUuid: string): Promise<MediaStream> =>
 	navigator.mediaDevices.getUserMedia({
 		video: {
@@ -17,6 +19,7 @@ const getStreamByCamUuid = (camUuid: string): Promise<MediaStream> =>
 interface IOuterProps {
 	camUuid: string;
 }
+
 
 type Detection =
 	| faceapi.WithFaceDescriptor<
@@ -32,6 +35,7 @@ type Detection =
 
 const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 	const { modelsLoaded } = useContext(FaceApiContext);
+	const { isFaceMatchFound } = useContext(OfficeContext);
 	const location = useLocation()
 	const [ mediaStream, setMediaStream ] = useState<MediaStream | null>(null);
 	const [ detection, setDetection ] = useState<Detection>();
@@ -76,8 +80,6 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 		const canvas = canvasPicWebCam.current;
 			if(canvas ){
 				if ( detection && detection?.detection.box.height > 190) {
-					// @ts-ignore
-			 		console.log(detection.desctiptor)
 					drawDetections();
 				}
 				else {
@@ -89,6 +91,10 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 		},
 		[ detection ]
 	);
+
+	const handleApprove  = () =>{
+		detection?.descriptor ? isFaceMatchFound!(detection?.descriptor) : window.alert("No face detected!");
+	}
 
 	useEffect(
 		() => {
@@ -130,6 +136,7 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 					/>
 					<canvas className="center" ref={canvasPicWebCam} />
 					{!faceClose && <h5 className="yellow">Stay closer to terminal</h5>}
+					<button className={BUTTON_CLASS_NAME} onClick={handleApprove}>Approve</button>
 				</div>
 			)}
 		</div>

@@ -5,8 +5,11 @@ import { IWorker } from 'types/Worker.type';
 import { IOffice } from 'types/Office.type';
 import { IValueState, notLoadedState, isValueState, loadingState, errorState, isReady } from 'util/valueState';
 
-import { getData, postData } from 'modules/api';
+import { getData, postData, updateData } from 'modules/api';
 import { ApiUrl } from 'constants/apiEndpoints';
+import { IAuthLog } from 'types/AuthLog.type';
+import { AuthLogsContext } from './AuthLogsContext';
+import { is } from 'ramda';
 
 interface IState {
 	selectedOffice: IOffice | null;
@@ -16,10 +19,11 @@ interface IState {
 
 interface IActions {
 	loadOfficeByTerminalUuid: (terminalUuid: string) => void;
-
 	loadWorkersByTerminalUuid: (terminalUuid: string) => void;
 	addWorkerToOffice: (worker: IWorker) => void;
 	setSelectedOffice: React.Dispatch<React.SetStateAction<IOffice | null>>;
+	isFaceMatchFound: (descriptor: Float32Array) => void;
+	
 }
 type IContextProps = IState & IActions;
 
@@ -27,7 +31,8 @@ export const OfficeContext = createContext<Partial<IContextProps>>({});
 
 export const OfficeContextProvider = ({ children }) => {
 	const [ selectedOffice, setSelectedOffice ] = useState<IOffice | null>(null);
-
+	const { terminalUuid } = useContext(TerminalContext);
+	const { postAuthLog } = useContext(AuthLogsContext);
 	const [ offices, setOffices ] = useState<IOffice[] | IValueState>(notLoadedState());
 
 	const loadOffices = async () => {
@@ -41,17 +46,30 @@ export const OfficeContextProvider = ({ children }) => {
 		}
 	};
 
+	const isFaceMatchFound = async (descriptor: Float32Array) => {
+		try {
+			const isOpened = await getData<boolean>( ApiUrl.faceMatch ,{descriptor, office_uuid: selectedOffice?.uuid});
+			if(!!isOpened && selectedOffice){
+				setSelectedOffice({...selectedOffice, open: true})
+				setTimeout(()=>{
+					setSelectedOffice({...selectedOffice, open: false})
+				},3000)
+			}
+			postAuthLog!(descriptor, isOpened)
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+
+
 	useEffect(() => {
 		loadOffices();
 	}, []);
 
-	// useEffect(
-	// 	() => {
-	// 	},
-	// 	[ selectedOffice ]
-	// );
+	
 	return (
-		<OfficeContext.Provider value={{ offices, selectedOffice, setSelectedOffice }}>
+		<OfficeContext.Provider value={{ offices, selectedOffice, setSelectedOffice, isFaceMatchFound }}>
 			{children}
 		</OfficeContext.Provider>
 	);

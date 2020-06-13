@@ -3,8 +3,10 @@ import { IAuthLog } from '../types/AuthLog.type';
 import { isValueState, IValueState, notLoadedState, loadingState, errorState, isReady } from 'util/valueState';
 
 import { ApiUrl } from 'constants/apiEndpoints';
-import { getData } from '../modules/api';
+import { getData, postData } from '../modules/api';
 import { OfficeContext } from './OfficeContext';
+import { TerminalContext } from './TerminalContext';
+import { CURRENT_TIMESTAMP } from 'util/formatUtil';
 
 interface IState {
 	authLogs: IAuthLog[] | IValueState;
@@ -12,7 +14,7 @@ interface IState {
 
 interface IActions {
 	loadAuthLogs: (terminalUuid: string) => void;
-	addAuthLog: (log: IAuthLog) => void;
+	postAuthLog: (descriptor: Float32Array, success: boolean) => void;
 }
 
 type IContextProps = IState & IActions;
@@ -21,10 +23,20 @@ export const AuthLogsContext = createContext<Partial<IContextProps>>({});
 
 export const AuthLogsProvider = ({ children }) => {
 	const { selectedOffice } = useContext(OfficeContext);
+	const { terminalUuid } = useContext(TerminalContext);
+
 	const [ authLogs, setAuthLogs ] = useState<IAuthLog[] | IValueState>(notLoadedState());
 
-	const addAuthLog = (newAuthLog: IAuthLog) => {
-		isValueState(authLogs) ? setAuthLogs([ newAuthLog ]) : setAuthLogs([ ...(authLogs as IAuthLog[]), newAuthLog ]);
+	const postAuthLog = async (descriptor: Float32Array, success: boolean) => {
+		try {
+			if (!terminalUuid) {
+				throw new Error('no terminal selected');
+			}
+			const authLog = await postData(ApiUrl.authLogs, { descriptor, terminal_uuid: terminalUuid, success });
+			isValueState(authLogs) ? setAuthLogs([ authLog ]) : setAuthLogs([ ...(authLogs as IAuthLog[]), authLog ]);
+		} catch (err) {
+			setAuthLogs(errorState(null, err));
+		}
 	};
 
 	const loadAuthLogs = async (officeUuid: string) => {
@@ -53,7 +65,7 @@ export const AuthLogsProvider = ({ children }) => {
 		<AuthLogsContext.Provider
 			value={{
 				authLogs,
-				addAuthLog,
+				postAuthLog,
 				loadAuthLogs
 			}}
 		>

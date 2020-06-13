@@ -23,7 +23,7 @@ export default function WorkersList() {
 				<ul key={worker.uuid} className={styles.row}>
 					<li>{worker.uuid}</li>
 					<li>{worker.name}</li>
-					<li>{worker.last_name}</li>
+					<li>{worker.lastName}</li>
 					<li>{worker.phone}</li>
 					<button className={BUTTON_CLASS_NAME}> delete</button>
 				</ul>

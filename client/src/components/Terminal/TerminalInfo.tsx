@@ -30,6 +30,10 @@ export default function TerminalInfo() {
 				<span className="col s2 orange-text text-darken-4">Office:</span> {selectedOffice!.name}
 			</li>
 			<li className="collection-item row">
+				<span className="col s2 orange-text text-darken-4">Office:</span>
+				{selectedOffice!.open ? <span className="lime">Opened</span> : <span className="yellow">Closed</span>}
+			</li>
+			<li className="collection-item row">
 				<span className="col s2 orange-text text-darken-4">Office uuid:</span> {selectedOffice!.uuid}
 			</li>
 			<li className="collection-item row">

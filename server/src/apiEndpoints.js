@@ -5,9 +5,13 @@ module.exports = {
 	workers: '/workers/',
 	verifyWorker: '/workers/verify',
 	offices: '/offices/',
-	officeByTerminalId: `/offices/:id`,
+
+	faceMatch: `/facematch/`,
+	// officeByUuidandDescriptor: '/offices/:office_uuid/:face_descriptor',
+	// officeByTerminalId: `/offices/:id`,
+
 	// faceMatcherByOfficeUuid: (uuid) => `/offices/${uuid}/facematcher`,
-	faceMatcherByOfficeUuid: `/offices/:id/facematcher/`,
+	faceMatcherByOfficeUuid: `/facematcher/:office_uuid`,
 
 	otherLogs: '/other-logs/',
 	otherLogsByOfficeUuid: '/other-logs/:officeUuid',

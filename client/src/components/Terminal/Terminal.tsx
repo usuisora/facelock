@@ -21,9 +21,9 @@ export default function Terminal() {
 						<Camera camUuid={selectedCamUuid} />
 					</div>
 				</div>
-				<Link to={path.settings} className="waves-effect  black  waves-light btn">
+				{/* <Link to={path.settings} className="waves-effect  black  waves-light btn">
 					Change terminal
-				</Link>
+				</Link> */}
 				<TerminalInfo />
 			</div>
 		</div>

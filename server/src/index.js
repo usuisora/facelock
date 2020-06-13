@@ -29,6 +29,8 @@ app.get('/', (request, response) => response.send('Hello world!'));
 app.get(apiUrl.otherLogsByOfficeUuid, getQueries.getOtherLogsByOfficeUuid);
 
 app.get(apiUrl.authLogsByOfficeUuid, getQueries.getAuthLogsByOfficeUuid);
+//
+app.post(apiUrl.authLogs, postQueries.postAuthLog);
 
 // app.get(apiUrl.terminalsByCamUuids, getQueries.getTerminalsByCamUuids);
 
@@ -39,6 +41,11 @@ app.get(apiUrl.terminals, getQueries.getTerminals);
 app.post(apiUrl.terminals, postQueries.postTerminal);
 
 app.get(apiUrl.workers, getQueries.getWorkersByOfficeUuid);
+
+app.post(apiUrl.workers, postQueries.postWorker);
+
+//
+app.get(apiUrl.faceMatch, getQueries.getWorkersByOfficeUuid);
 
 // app.get(apiUrl.officeByTerminalId, (request, response) => {
 // 	const terminalUuid = request.params.id;
