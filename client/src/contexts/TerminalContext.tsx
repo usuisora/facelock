@@ -30,35 +30,7 @@ export function TerminalProvider({ children }) {
 
 	const [ terminalUuid, setTerminalUuid ] = useState<string | IValueState>(notLoadedState());
 
-	// const {camUuids} = useContext(CamsContext)
-
-	// const loadTerminals = async (camUuids) => {
-	// 	try {
-	// 		setTerminals(loadingState());
-	// 		const terminals = await getData<ITerminal[]>(ApiUrl.terminals, { uuids : (camUuids as string[]).join('+') });
-	// 		setTerminals(terminals);
-	// 	} catch (err) {
-	// 		console.log(err);
-	// 		setTerminals(errorState(null, err));
-	// 	}
-	// };
-
-	// const registrateTerminal = (terminalUuid: string, officeUuid: string) => {
-	// 	const newTerminal: ITerminal = { uuid: terminalUuid, officeUuid: officeUuid };
-	// 	postData(ApiUrl.terminals, newTerminal);
-	// 	setTerminals([ ...(terminals as ITerminal[]), newTerminal ]);
-	// };
-
-	// const updateOfficeUuidOfSelectedTerminal = (officeUuid) => {
-	// 	try{
-	// 		if(isReady(selectedTerminal))
-	// 		updateData(ApiUrl.terminalById(selectedTerminal?.uuid), { officeUuid });
-	// 		setSelectedTerminal({...selectedTerminal, officeUuid} as ITerminal)
-	// 	}
-	// 	catch(err){
-	// 		console.error(err)
-	// 	}
-	// };
+	
 	const postTerminal = async (cam_uuid: string, office_uuid: string) => {
 		try {
 			await postData(ApiUrl.terminals, {
@@ -71,6 +43,7 @@ export function TerminalProvider({ children }) {
 			console.error(err);
 		}
 	};
+	
 	const loadTerminalUuid = async (cam_uuid, office_uuid) => {
 		try {
 			setTerminalUuid(loadingState());

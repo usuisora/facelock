@@ -7,7 +7,6 @@ export const fakeAuth = {
 		postData('http://localhost:5000/login', { login, password })
 			.then((response) => {
 				this.isAuthenticated = response.isAuthenticated;
-				console.log(response.isAuthenticated);
 				setTimeout(cb, 100);
 			})
 			.catch(errCb);

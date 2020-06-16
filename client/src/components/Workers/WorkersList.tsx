@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { WorkerContext } from 'contexts/WorkerContext';
-import { isValueState, isReady } from 'util/valueState';
+import { isReady } from 'util/valueState';
 import { IWorker } from 'types/Worker.type';
 import MessageCentered from 'partials/MessageCentered';
 import { BUTTON_CLASS_NAME } from 'constants/styleConsts';
@@ -8,7 +8,7 @@ import { BUTTON_CLASS_NAME } from 'constants/styleConsts';
 import styles from './Workers.module.scss';
 
 export default function WorkersList() {
-	const { workers } = useContext(WorkerContext);
+	const { workers, deleteWorker } = useContext(WorkerContext);
 
 	return isReady(workers) && (workers as IWorker[]).length ? (
 		<div className={styles.workersList}>
@@ -23,9 +23,11 @@ export default function WorkersList() {
 				<ul key={worker.uuid} className={styles.row}>
 					<li>{worker.uuid}</li>
 					<li>{worker.name}</li>
-					<li>{worker.lastName}</li>
+					<li>{worker.last_name}</li>
 					<li>{worker.phone}</li>
-					<button className={BUTTON_CLASS_NAME}> delete</button>
+					<button className={BUTTON_CLASS_NAME} onClick={() => deleteWorker!(worker.uuid)}>
+						delete
+					</button>
 				</ul>
 			))}
 		</div>

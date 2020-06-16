@@ -1,35 +1,43 @@
-const pool = require('../constants/pool');
+const pool = require('../pool');
+const faceapi = require('face-api.js');
 
-export const _ = (request, response) => {
-	pool.query('', [], (error, result) => {});
-};
+const updateOffice = (request, response) => {
+	const { office_uuid } = request.body;
 
-export const openOfficeDoor = (office_id) => {
-	pool.query('UPDATE office SET open = $1 WHERE id = $1', [ true ], (error, result) => {
+	pool.query('SELECT * from worker where office_uuid = $1', [ office_uuid ], (error, { rows: workers }) => {
 		if (error) {
 			throw error;
 		}
-		response.status(200).send(` Office ${office_id} Opened`);
-		setTimeout(() => closeOfficeDoorToggle(office_id), 5000);
+		if (!workers.length) {
+			response.status(200).send('no workers');
+		}
+		const labeledDescriptors = workers.length
+			? workers.map((worker) => {
+					const arr = [];
+					const fd = JSON.parse(worker.face_descriptor);
+					for (const property in fd) {
+						arr.push(fd[property]);
+					}
+					const descriptor = new Float32Array(arr);
+					return new faceapi.LabeledFaceDescriptors(worker.uuid, [ descriptor ]);
+				})
+			: null;
+
+		const faceMatcherBlob = JSON.stringify(labeledDescriptors ? new faceapi.FaceMatcher(labeledDescriptors) : null);
+
+		pool.query(
+			'UPDATE office SET face_matcher = $1 WHERE uuid = $2',
+			[ faceMatcherBlob, office_uuid ],
+			(error, results) => {
+				if (error) {
+					throw error;
+				}
+				response.status(200);
+			}
+		);
 	});
 };
 
-export const closeOfficeDoor = (office_id) => {
-	pool.query('UPDATE users SET name = $1, email = $2 WHERE id = $3', [ false ], (error, result) => {
-		if (error) {
-			throw error;
-		}
-		response.status(200).send(` Office ${office_id} closed`);
-	});
-};
-
-export const updateGuardPassword = (request, response) => {
-	const { oldpassword, newpassword } = request.body;
-
-	pool.query('UPDATE Guard SET password = $2, WHERE password = $1', [ oldpassword, newpassword ], (error, result) => {
-		if (error) {
-			throw error;
-		}
-		response.status(200).send(` Guard password updated`);
-	});
+module.exports = {
+	updateOffice
 };

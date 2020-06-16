@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { isValueState, isLoading, isReady } from 'util/valueState';
+import {  isReady } from 'util/valueState';
 import MessageCentered from 'partials/MessageCentered';
 import { OfficeContext } from 'contexts/OfficeContext';
 
@@ -16,7 +16,7 @@ export default function OfficesList() {
 		<MessageCentered>No offices found.</MessageCentered>
 	) : (
 		<div className={styles.termilList}>
-			<h4 className="grey-text">Available Offices</h4>
+			<h4 className="grey-text text-darken-4">Available Offices</h4>
 			{(offices as IOffice[]).map((office: IOffice) => (
 				<div   key  = {office.uuid} className={styles.row}>
 					<ul className={styles.left}>

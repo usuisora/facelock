@@ -5,7 +5,7 @@ import { IWorker, IWorkerForm } from 'types/Worker.type';
 import { IOffice } from 'types/Office.type';
 import { IValueState, notLoadedState, isValueState, loadingState, errorState, isReady } from 'util/valueState';
 
-import { getData, postData } from 'modules/api';
+import { getData, postData, deleteData } from 'modules/api';
 import { ApiUrl } from 'constants/apiEndpoints';
 import { OfficeContext } from './OfficeContext';
 
@@ -16,6 +16,7 @@ interface IState {
 interface IActions {
 	loadWorkersByTerminalUuid: (terminalUuid: string) => Promise<void>;
 	postWorker: (worker: IWorker) => void;
+	deleteWorker: (worker_uuid: string) => void;
 }
 
 type IContextProps = IState & IActions;
@@ -25,6 +26,15 @@ export const WorkerContext = createContext<Partial<IContextProps>>({});
 export const WorkerContextProvider = ({ children }) => {
 	const [ workers, setWorkers ] = useState<IWorker[] | IValueState>(notLoadedState);
 	const { selectedOffice } = useContext(OfficeContext);
+
+	const deleteWorker = (worker_uuid) => {
+		try {
+			deleteData(ApiUrl.workerByUuid(worker_uuid));
+			setWorkers({ ...(workers as IWorker[]).filter((w) => w.uuid !== worker_uuid) });
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
 	const loadWorkersByOfficeUuid = async (office_uuid: string) => {
 		try {
@@ -39,11 +49,12 @@ export const WorkerContextProvider = ({ children }) => {
 
 	const postWorker = (worker: IWorker) => {
 		try {
-			if (!worker.imageBlob || !worker.imageBlob.length) {
-				throw new Error('No image blob provided! ');
+			if (!worker.descriptor) {
+				throw new Error('No descriptor provided! ');
 			}
+
 			setWorkers(loadingState());
-			postData(ApiUrl.workers, { worker });
+			postData(ApiUrl.workers, { ...worker });
 			setWorkers([ ...(workers as IWorker[]), worker ]);
 		} catch (err) {
 			console.error(err, 'Registration failed');
@@ -52,11 +63,11 @@ export const WorkerContextProvider = ({ children }) => {
 
 	useEffect(
 		() => {
-			if (selectedOffice && isReady(selectedOffice)) {
+			if (selectedOffice && !isValueState(selectedOffice)) {
 				loadWorkersByOfficeUuid(selectedOffice.uuid);
 			}
 		},
 		[ selectedOffice ]
 	);
-	return <WorkerContext.Provider value={{ workers, postWorker }}>{children}</WorkerContext.Provider>;
+	return <WorkerContext.Provider value={{ workers, postWorker, deleteWorker }}>{children}</WorkerContext.Provider>;
 };

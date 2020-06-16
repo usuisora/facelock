@@ -1,4 +1,4 @@
-import React, { Component, useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { IOtherLog } from '../../types/otherLog.type';
 import { isReady } from '../../util/valueState';
 
@@ -36,7 +36,6 @@ const OtherLogList: React.SFC = () => {
 };
 const AuthLogList = () => {
 	const { authLogs} = useContext(AuthLogsContext);
-
 	return !isReady(authLogs) ? (
 		<MessageCentered> No auth logs</MessageCentered>
 	) : (
@@ -50,7 +49,7 @@ const AuthLogList = () => {
 				
 				<ul className={styles.row}>
 				<a >{item.worker_id || 'Unknown'}</a>
-					<li>{item.face_descriptor }</li>
+					<li>{ item.face_descriptor.slice(0,15)+'...' }</li>
 					<li>{item.moment}</li>
 					<li>{item.success ? 'Succeed' : 'Failed'}</li>
 				</ul>

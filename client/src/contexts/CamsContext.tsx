@@ -22,7 +22,6 @@ const getCameraDevicesIds = () =>
 const allowUserMedia = async () => {
 	await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
 	let devices = await navigator.mediaDevices.enumerateDevices();
-	console.log(devices);
 };
 
 export const CamsContext = createContext<Partial<IContextProps>>({});

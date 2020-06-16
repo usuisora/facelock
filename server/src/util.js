@@ -8,6 +8,5 @@ export const createDescriptor = async (imageSrc) => {
 
 export const createFaceMatcher = (descriptors) => {
 	const faceMatcher = new faceapi.FaceMatcher(descriptors);
-	console.log(faceMatcher);
 	return faceMatcher;
 };

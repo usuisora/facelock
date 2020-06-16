@@ -3,13 +3,13 @@ export const ApiUrl = {
 	logout: `api-token-deauth/`,
 	passwordChange: `rest-auth/password/change/`,
 	workers: `workers/`,
-	workerById: (uuid) => `workers/${uuid}`,
-
+	workerByUuid: (uuid) => `workers/${uuid}`,
 	verifyWorker: `workers/verify/{office_uuid}/?q={descriptor}`,
 	offices: `offices/`,
 	faceMatch: `facematch/`,
 	officeById: (uuid) => `offices/${uuid}`,
 	faceMatcherByOfficeUuid: (office_uuid) => `/facematcher/${office_uuid}`,
+	workerByFaceDescriptor: `workerByFaceDescriptor/`,
 	otherLogs: `other-logs/`,
 	otherLogsByOfficeId: (uuid) => `other-logs/${uuid}`,
 
@@ -18,7 +18,5 @@ export const ApiUrl = {
 
 	terminals: `terminals/`,
 	terminalsByParams: (params) => `terminals/${params} `,
-
-	activate: `users/activate/`,
 	settings: `settings/`
 };

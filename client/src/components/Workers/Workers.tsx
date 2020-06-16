@@ -1,11 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { WorkerContext } from 'contexts/WorkerContext';
-import { isValueState } from 'util/valueState';
 import MessageCentered from 'partials/MessageCentered';
 import { OfficeContext } from 'contexts/OfficeContext';
 import { Link } from 'react-router-dom';
 import { path } from 'constants/routes';
 import WorkersList from './WorkersList';
+import { BUTTON_CLASS_NAME } from 'constants/styleConsts';
 
 export default function Workers() {
 	const { selectedOffice } = useContext(OfficeContext);
@@ -19,10 +18,12 @@ export default function Workers() {
 		</div>
 	) : (
 		<div className="container">
-			<p className="black-text">
-				Terminal connected to office - {selectedOffice.name} - {selectedOffice.floor}floor.
-			</p>
-			<p>Office ID: {selectedOffice.uuid}</p>
+			<ul>
+				<li className="black-text">
+					Terminal connected to office - {selectedOffice.name} - {selectedOffice.floor}floor.
+				</li>
+				<li>Office ID: {selectedOffice.uuid}</li>
+			</ul>
 			<WorkersList />
 		</div>
 	);

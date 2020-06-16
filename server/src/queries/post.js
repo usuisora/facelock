@@ -1,5 +1,5 @@
 const pool = require('../pool');
-
+const faceapiUtil = require('../faceapiUtil');
 const postGuard = (request, response) => {
 	const { name, lastname, phone, password, faceDescriptor } = request.body;
 	pool.query(
@@ -13,7 +13,6 @@ const postGuard = (request, response) => {
 };
 const postTerminal = (request, response) => {
 	const { uuid, cam_uuid, office_uuid } = request.body;
-	console.log(request.body);
 	pool.query(
 		`insert into terminal  (uuid,  cam_uuid, office_uuid)
 		VALUES ($1,$2,$3)`,
@@ -27,29 +26,12 @@ const postTerminal = (request, response) => {
 	);
 };
 
-// const getOfficeFaceMatcherByTerminalUuid = async (terminal_uuid) => {
-// 	pool.query(
-// 		`select face_matcher from terminal join office on terminal.office_uuid === office.uuid
-// 	 where terminal.uuid === $1`,
-// 		[ terminal_uuid ],
-// 		(error, results) => {
-// 			if (error) {
-// 				throw error;
-// 			}
-// 			return await results[0].face_matcher;
-// 		}
-// 	);
-// };
-
 const postAuthLog = (request, response) => {
-	const { descriptor, terminal_uuid, success } = request.query;
-	console.log(request.query);
+	const { descriptor, terminal_uuid, success } = request.body;
+
 	pool.query(
 		`insert into login_event(terminal_uuid, moment,face_descriptor, success)
-		values ($1,
-				LOCALTIMESTAMP,
-				$2,
-				$3)`,
+		values ($1,LOCALTIMESTAMP,$2,$3)`,
 		[ terminal_uuid, descriptor, success ],
 		(error, results) => {
 			if (error) {
@@ -60,35 +42,32 @@ const postAuthLog = (request, response) => {
 	);
 };
 
-const postWorker = (request, response) => {
-	const { uuid, name, lastName, phone, officeUuid, faceDescriptor } = request.body;
+const postWorker = async (request, response) => {
+	const { uuid, name, last_name, phone, officeUuid, descriptor } = request.body;
+
 	pool.query(
-		`insert into Worker (name, last_name, phone, office_id, face_descriptor)
-	values ($1,$2,$3,$4)`,
-		[ uuid, name, lastName, phone, officeUuid, faceDescriptor ],
+		`insert into Worker (uuid, name, last_name, phone, office_uuid, face_descriptor)
+	values ($1,$2,$3,$4, $5, $6)`,
+		[ uuid, name, last_name, phone, officeUuid, descriptor ],
 		(error, result) => {
-			response.status(201).send(`Worker added with ID: ${result.id}`);
+			if (error) {
+				response.status(404).send(null);
+			}
+			response.status(201).send(`Worker added with ID: ${result.uuid}`);
 		}
 	);
 };
-// const postLoginEvent = (success, faceDescriptor, terminalId) => {
-// 	const moment = new Date.UTC.toString();
-// 	pool.query(
-// 		`insert into login_event (face_descriptor, moment, success, terminal_id)
-// 		VALUES ($1,current_timestamp,$2,$3)`,
-// 		[ faceDescriptor, success, terminalId ],
-// 		(error, result) => {
-// 			response.status(201).send(`Login event posted `);
-// 		}
-// 	);
-// };
 
-const postOtherLog = (message, terminalId) => {
+const postOtherLog = (request, response) => {
+	const { message, terminalUuid } = request.body;
 	pool.query(
-		`insert into other_event ( moment, message, terminal_id)
+		`insert into other_event ( moment, message, terminal_uuid)
 		VALUES (current_timestamp,$1,$2)`,
-		[ message, terminalId ],
-		(error, result) => {
+		[ message, terminalUuid ],
+		(error, results) => {
+			if (error) {
+				throw error;
+			}
 			response.status(201).send(`Other event event posted `);
 		}
 	);
@@ -97,5 +76,6 @@ const postOtherLog = (message, terminalId) => {
 module.exports = {
 	postTerminal,
 	postAuthLog,
-	postWorker
+	postWorker,
+	postOtherLog
 };

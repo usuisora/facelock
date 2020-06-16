@@ -9,7 +9,6 @@ export async function createDescriptor(imageBlb: string): Promise<Float32Array |
 
 export function createFaceMatcher(labeledDescriptors: any) {
 	const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
-	console.log(faceMatcher);
 	return faceMatcher;
 }
 

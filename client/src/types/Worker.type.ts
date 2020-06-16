@@ -4,10 +4,9 @@ export interface IWorker {
 	uuid: string;
 	officeUuid: string;
 	name: string;
-	lastName;
+	last_name: string;
 	phone: string;
-	imageBlob?: string | null;
-	faceDescriptor?: faceapi.LabeledFaceDescriptors[] | null;
+	descriptor: string;
 }
 export interface IWorkerForm {
 	name: string;

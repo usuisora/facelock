@@ -1,29 +1,30 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { TerminalContext } from './TerminalContext';
+import { AuthLogsContext } from './AuthLogsContext';
 
 import { IWorker } from 'types/Worker.type';
 import { IOffice } from 'types/Office.type';
 import { IValueState, notLoadedState, isValueState, loadingState, errorState, isReady } from 'util/valueState';
 
-import { getData, postData, updateData } from 'modules/api';
+import { getData,   updateData } from 'modules/api';
 import { ApiUrl } from 'constants/apiEndpoints';
-import { IAuthLog } from 'types/AuthLog.type';
-import { AuthLogsContext } from './AuthLogsContext';
-import { is } from 'ramda';
 
 interface IState {
 	selectedOffice: IOffice | null;
 	offices: IOffice[] | IValueState;
-	workers: IWorker[];
+	lastEnteredWorker:IWorker
 }
 
 interface IActions {
 	loadOfficeByTerminalUuid: (terminalUuid: string) => void;
-	loadWorkersByTerminalUuid: (terminalUuid: string) => void;
-	addWorkerToOffice: (worker: IWorker) => void;
+	updateOffice:(  ) =>void;
 	setSelectedOffice: React.Dispatch<React.SetStateAction<IOffice | null>>;
-	isFaceMatchFound: (descriptor: Float32Array) => void;
+	getWorkerByFaceMatch: (descriptor: Float32Array) =>Promise<IWorker | null>;
 	
+}
+
+interface IFaceMatch {
+	_label: string;
+	_distance: number;
 }
 type IContextProps = IState & IActions;
 
@@ -31,9 +32,9 @@ export const OfficeContext = createContext<Partial<IContextProps>>({});
 
 export const OfficeContextProvider = ({ children }) => {
 	const [ selectedOffice, setSelectedOffice ] = useState<IOffice | null>(null);
-	const { terminalUuid } = useContext(TerminalContext);
 	const { postAuthLog } = useContext(AuthLogsContext);
 	const [ offices, setOffices ] = useState<IOffice[] | IValueState>(notLoadedState());
+	const [lastEnteredWorker, setLastEnteredWorker] = useState<IWorker>();
 
 	const loadOffices = async () => {
 		try {
@@ -41,23 +42,46 @@ export const OfficeContextProvider = ({ children }) => {
 			const offices = await getData<IOffice[]>(ApiUrl.offices);
 			setOffices(offices);
 		} catch (err) {
-			console.log(err);
 			setOffices(errorState(null, err));
 		}
 	};
 
-	const isFaceMatchFound = async (descriptor: Float32Array) => {
-		try {
-			const isOpened = await getData<boolean>( ApiUrl.faceMatch ,{descriptor, office_uuid: selectedOffice?.uuid});
-			if(!!isOpened && selectedOffice){
-				setSelectedOffice({...selectedOffice, open: true})
+	const updateOffice  = async () =>{
+
+		try{
+			selectedOffice && 
+			 await updateData(ApiUrl.offices, {office_uuid: selectedOffice.uuid})
+		}
+		catch(err){
+			console.error(err)
+		}
+	}
+
+	const openOffice =  () =>{
+		selectedOffice && setSelectedOffice({...selectedOffice, open: true})
 				setTimeout(()=>{
-					setSelectedOffice({...selectedOffice, open: false})
+					selectedOffice && setSelectedOffice({...selectedOffice, open: false})
 				},3000)
+	}
+
+	const getWorkerByFaceMatch  = async (descriptor: Float32Array) => {
+		try {
+			const faceMatch = await getData<IFaceMatch>( ApiUrl.faceMatch ,
+				{descriptor, office_uuid: selectedOffice?.uuid});
+				const open = faceMatch._label !== 'unknown'
+			if(	open ){
+				openOffice()
+				const worker = await getData<IWorker>(ApiUrl.workerByUuid(faceMatch._label))
+				setLastEnteredWorker(worker)
+				return worker
 			}
-			postAuthLog!(descriptor, isOpened)
+			else {
+				return null
+			}
+
 		} catch (err) {
 			console.error(err);
+			return null
 		}
 	};
 
@@ -66,10 +90,11 @@ export const OfficeContextProvider = ({ children }) => {
 	useEffect(() => {
 		loadOffices();
 	}, []);
+	
 
 	
 	return (
-		<OfficeContext.Provider value={{ offices, selectedOffice, setSelectedOffice, isFaceMatchFound }}>
+		<OfficeContext.Provider value={{ lastEnteredWorker, offices, selectedOffice, setSelectedOffice, getWorkerByFaceMatch , updateOffice}}>
 			{children}
 		</OfficeContext.Provider>
 	);

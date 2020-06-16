@@ -4,9 +4,8 @@ export interface IOffice {
 	uuid: string;
 	name: string;
 	terminal_uuid: string;
-	faceMatcher: faceapi.FaceMatcher;
+	// faceMatcher: faceapi.FaceMatcher;
 	businessCenterUuid: string;
 	open: boolean;
 	floor: number;
 }
-

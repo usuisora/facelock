@@ -4,16 +4,16 @@ import { IValueState, notLoadedState, loadingState, errorState, isValueState, is
 import { ApiUrl } from 'constants/apiEndpoints';
 import { getData, postData } from '../modules/api';
 import Moment from 'moment';
-import { v1 as uuidv1 } from 'uuid';
 import { OfficeContext } from './OfficeContext';
+import { TerminalContext } from './TerminalContext';
 
 interface IState {
 	otherLogs: IOtherLog[] | IValueState;
 }
 
 interface IActions {
+	postOtherLog: (message: string) => void;
 	loadOtherLogs: (termUuid: string) => void;
-	addOtherLog: (message: string, terminalUuid: string) => void;
 }
 
 type IContextProps = IState & IActions;
@@ -21,6 +21,7 @@ export const OtherLogsContext = createContext<Partial<IContextProps>>({});
 
 export function OtherLogsProvider({ children }) {
 	const { selectedOffice } = useContext(OfficeContext);
+	const { terminalUuid } = useContext(TerminalContext);
 	const [ otherLogs, setOtherLogs ] = useState<IOtherLog[] | IValueState>(notLoadedState());
 
 	const loadOtherLogs = async (officeUuid) => {
@@ -37,13 +38,13 @@ export function OtherLogsProvider({ children }) {
 		}
 	};
 
-	const addOtherLog = (message: string, terminalUuid: string) => {
+	const postOtherLog = (message: string) => {
 		const moment = Moment().format();
 
 		const newOtherLog: IOtherLog = {
 			moment,
 			message,
-			terminalUuid
+			terminalUuid: terminalUuid as string
 		};
 
 		isValueState(otherLogs)
@@ -62,7 +63,7 @@ export function OtherLogsProvider({ children }) {
 	);
 
 	return (
-		<OtherLogsContext.Provider value={{ otherLogs, loadOtherLogs, addOtherLog }}>
+		<OtherLogsContext.Provider value={{ otherLogs, loadOtherLogs, postOtherLog }}>
 			{children}
 		</OtherLogsContext.Provider>
 	);

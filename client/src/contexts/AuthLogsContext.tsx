@@ -6,7 +6,6 @@ import { ApiUrl } from 'constants/apiEndpoints';
 import { getData, postData } from '../modules/api';
 import { OfficeContext } from './OfficeContext';
 import { TerminalContext } from './TerminalContext';
-import { CURRENT_TIMESTAMP } from 'util/formatUtil';
 
 interface IState {
 	authLogs: IAuthLog[] | IValueState;

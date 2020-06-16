@@ -2,11 +2,14 @@ const app = require('express')({});
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const apiUrl = require('./apiEndpoints');
 
+const apiUrl = require('./apiEndpoints');
 const getQueries = require('./queries/get');
 const postQueries = require('./queries/post');
+const updateQueries = require('./queries/update');
+const deleteQueries = require('./queries/delete');
 
+const { loadFaceApiModels } = require('./faceapiUtil');
 const port = 5000;
 
 const corsy = cors({
@@ -29,12 +32,12 @@ app.get('/', (request, response) => response.send('Hello world!'));
 app.get(apiUrl.otherLogsByOfficeUuid, getQueries.getOtherLogsByOfficeUuid);
 
 app.get(apiUrl.authLogsByOfficeUuid, getQueries.getAuthLogsByOfficeUuid);
-//
+
 app.post(apiUrl.authLogs, postQueries.postAuthLog);
 
-// app.get(apiUrl.terminalsByCamUuids, getQueries.getTerminalsByCamUuids);
-
 app.get(apiUrl.offices, getQueries.getOffices);
+
+app.put(apiUrl.offices, updateQueries.updateOffice);
 
 app.get(apiUrl.terminals, getQueries.getTerminals);
 
@@ -44,30 +47,13 @@ app.get(apiUrl.workers, getQueries.getWorkersByOfficeUuid);
 
 app.post(apiUrl.workers, postQueries.postWorker);
 
-//
-app.get(apiUrl.faceMatch, getQueries.getWorkersByOfficeUuid);
+app.get(apiUrl.workerByUuid, getQueries.getWorkerByUuid);
 
-// app.get(apiUrl.officeByTerminalId, (request, response) => {
-// 	const terminalUuid = request.params.id;
+app.delete(apiUrl.workerByUuid, deleteQueries.deleteWorker);
 
-// 	response.json([
-// 		{
-// 			uuid: 'office123132',
-// 			name: 'Goana-Office',
-// 			faceMatcher: JSON.stringify({ faces: [ 'f1', 'f2' ] }),
-// 			businessCenterUuid: '1',
-// 			open: true,
-// 			floor: 3
-// 		},
-// 		{
-// 			uuid: 'office123144432',
-// 			name: 'Goana-Office',
-// 			faceMatcher: JSON.stringify({ faces: [ 'f1', 'f2' ] }),
-// 			businessCenterUuid: '1',
-// 			open: true,
-// 			floor: 3
-// 		}
-// 	]);
-// });
+app.get(apiUrl.faceMatch, getQueries.getMatchByFaceDescriptor);
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, async () => {
+	await loadFaceApiModels;
+	console.log(`Example app listening on port ${port}!`);
+});

@@ -1,6 +1,4 @@
-import React, { useContext, useEffect } from 'react';
-import CameraFactory from 'components/Terminal/CameraFactory';
-import { TerminalContext } from '../../contexts/TerminalContext';
+import React, { useContext } from 'react';
 import Camera from './Camera';
 import TerminalInfo from './TerminalInfo';
 import MessageCentered from 'partials/MessageCentered';
@@ -9,6 +7,7 @@ import styles from './Terminal.module.scss';
 import { path } from 'constants/routes';
 import { Link } from 'react-router-dom';
 import { CamsContext } from 'contexts/CamsContext';
+import LastEnteredWorker from './LastEnteredWorker';
 
 export default function Terminal() {
 	const { selectedCamUuid } = useContext(CamsContext);
@@ -21,9 +20,7 @@ export default function Terminal() {
 						<Camera camUuid={selectedCamUuid} />
 					</div>
 				</div>
-				{/* <Link to={path.settings} className="waves-effect  black  waves-light btn">
-					Change terminal
-				</Link> */}
+				<LastEnteredWorker />
 				<TerminalInfo />
 			</div>
 		</div>

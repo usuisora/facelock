@@ -20,27 +20,27 @@ export default function TerminalInfo() {
 		// <div className="card">
 		// <div className="card-content">
 		<ul className="collection with-header">
-			<li className="collection-header grey-text">
+			<li className="collection-header  ">
 				<h4>Terminal info</h4>
 			</li>
+			<li className="collection-item row">
+				<span className="col s2 grey-text text-darken-4">Office:</span> {selectedOffice!.name}
+			</li>
+			<li className="collection-item row">
+				<span className="col s2 grey-text text-darken-4">Status:</span>
+				{selectedOffice!.open ? <span className="lime">Opened</span> : <span className="bold">Closed</span>}
+			</li>
 			<li className="collection-item row ">
-				<span className="col s2 orange-text text-darken-4">Terminal uuid:</span> {terminalUuid || 'no'}
+				<span className="col s2 grey-text text-darken-4">Terminal uuid:</span> {terminalUuid || 'no'}
 			</li>
 			<li className="collection-item row">
-				<span className="col s2 orange-text text-darken-4">Office:</span> {selectedOffice!.name}
+				<span className="col s2 grey-text text-darken-4">Office uuid:</span> {selectedOffice!.uuid}
 			</li>
 			<li className="collection-item row">
-				<span className="col s2 orange-text text-darken-4">Office:</span>
-				{selectedOffice!.open ? <span className="lime">Opened</span> : <span className="yellow">Closed</span>}
+				<span className="col s2 grey-text text-darken-4">Floor:</span> {selectedOffice!.floor}
 			</li>
 			<li className="collection-item row">
-				<span className="col s2 orange-text text-darken-4">Office uuid:</span> {selectedOffice!.uuid}
-			</li>
-			<li className="collection-item row">
-				<span className="col s2 orange-text text-darken-4">Floor:</span> {selectedOffice!.floor}
-			</li>
-			<li className="collection-item row">
-				<span className="col s2 orange-text text-darken-4">Camera uuid:</span> {selectedCamUuid}
+				<span className="col s2 grey-text text-darken-4">Camera uuid:</span> {selectedCamUuid}
 			</li>
 		</ul>
 		// </div>

@@ -7,7 +7,6 @@ export default function useFetch(url) {
 	// const [ loading, setLoading ] = useState(true);
 
 	useEffect(() => {
-		debugger;
 		axios
 			.get(ApiBaseUrl + url, { withCredentials: true })
 			.then(function(response) {

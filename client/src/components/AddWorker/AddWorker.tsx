@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { OfficeContext } from 'contexts/OfficeContext';
 import WorkerForm from './WorkerForm';
 import MessageCentered from 'partials/MessageCentered';
-import { BUTTON_CLASS_NAME } from 'constants/styleConsts';
 import { path } from 'constants/routes';
 import { Link } from 'react-router-dom';
 export default function AddWorker() {

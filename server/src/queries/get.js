@@ -1,12 +1,14 @@
 'use strict';
 
 const pool = require('../pool');
+const faceapi = require('face-api.js');
+const { strToFloat32Arr } = require('../faceapiUtil');
 
 const getAuthLogsByOfficeUuid = (request, response) => {
-	const officeUuid = parseInt(request.params.officeUuid);
+	const { officeUuid } = request.params;
 
 	pool.query(
-		`select login_event.face_descriptor , moment, success, worker.uuid as worker_uuid from login_event
+		`select login_event.face_descriptor , moment, success, worker.uuid as worker_uuid  from login_event
 		join terminal on terminal.uuid  = login_event.terminal_uuid
 		join office on terminal.office_uuid = office.uuid
 		
@@ -23,7 +25,7 @@ const getAuthLogsByOfficeUuid = (request, response) => {
 };
 
 const getOtherLogsByOfficeUuid = (request, response) => {
-	const officeUuid = parseInt(request.params.officeUuid);
+	const officeUuid = request.params;
 	pool.query(
 		'select * from other_event join terminal on terminal.uuid = other_event.terminal_uuid where terminal.office_uuid = $1',
 		[ officeUuid ],
@@ -43,7 +45,7 @@ const getWorkers = (request, response) => {
 		}
 		response.status(200).json(results.rows);
 	});
-}; //checked
+};
 
 const getGuards = (request, response) => {
 	pool.query('select id, name, last_name, phone from guard', (error, results) => {
@@ -52,7 +54,8 @@ const getGuards = (request, response) => {
 		}
 		response.status(200).json(results.rows);
 	});
-}; // checked
+};
+
 const getOffices = (request, response) => {
 	pool.query('select * from office', (error, results) => {
 		if (error) {
@@ -60,12 +63,10 @@ const getOffices = (request, response) => {
 		}
 		response.status(200).json(results.rows);
 	});
-}; // checked
+};
 
 const getTerminals = (request, response) => {
 	const { cam_uuid, office_uuid } = request.query;
-
-	// console.log(cam_uuid, office_uuid);
 
 	pool.query(
 		'select * from terminal where cam_uuid = $1 and  office_uuid = $2',
@@ -74,7 +75,6 @@ const getTerminals = (request, response) => {
 			if (error) {
 				throw error;
 			}
-			// console.log(results.rows);
 			response.status(200).json(results.rows);
 		}
 	);
@@ -92,31 +92,42 @@ const getWorkersByOfficeUuid = (request, response) => {
 			response.status(200).json(results.rows);
 		}
 	);
-}; //checked
+};
 
-const getIsFaceDescriptorInOffice = (request, response) => {
-	const { face_descriptor, office_uuid } = request.query;
-
-	console.log(request.query);
-	pool.query(`select * from office where uuid = $1`, [ office_uuid ], (error, results) => {
+const getMatchByFaceDescriptor = (request, response) => {
+	const { office_uuid, descriptor } = request.query;
+	pool.query('SELECT * from worker where office_uuid = $1', [ office_uuid ], (error, { rows: workers }) => {
 		if (error) {
 			throw error;
-		} else if (!results.rows.length) {
-			throw Error('no such office');
-		} else {
-			const faceMatcherBlob = results.rows[0].faceMatcher;
-			if (!faceMatcherBlob) {
-				response.status(200).json({ isFound: false });
-			} else {
-				const faceMatcher = JSON.parse(faceMatcherBlob);
-				const bestMatch = faceMatcher.findBestMatch(face_descriptor);
-				console.log(bestMatch.toString());
-			}
 		}
 
-		response.status(200).json(isFound);
+		const labeledDescriptors = workers.map((worker) => {
+			const wd = strToFloat32Arr(worker.face_descriptor);
+			return new faceapi.LabeledFaceDescriptors(worker.uuid, [ wd ]);
+		});
+		if (!labeledDescriptors.length) {
+			response.status(200).json({
+				_label: 'unknown',
+				_distance: '-1'
+			});
+		} else {
+			const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
+			const bestMatch = faceMatcher.findBestMatch(strToFloat32Arr(descriptor));
+			response.status(200).json(bestMatch);
+		}
 	});
-}; //checked
+};
+
+const getWorkerByUuid = (request, response) => {
+	const { uuid } = request.params;
+
+	pool.query(`select * from worker where uuid = $1`, [ uuid ], (error, results) => {
+		if (error) {
+			throw error;
+		}
+		response.status(200).json(results.rows[0]);
+	});
+};
 
 const getVarifiedAsGuard = (request, response) => {
 	const password = parseInt(request.body.password);
@@ -129,6 +140,7 @@ const getVarifiedAsGuard = (request, response) => {
 		response.status(200).json(results.rows);
 	});
 };
+
 const getVarifiedAsAdmin = (request, response) => {
 	const password = parseInt(request.body.password);
 
@@ -191,5 +203,6 @@ module.exports = {
 	getOffices,
 	getTerminals,
 	getWorkersByOfficeUuid,
-	getIsFaceDescriptorInOffice
+	getMatchByFaceDescriptor,
+	getWorkerByUuid
 };

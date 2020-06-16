@@ -1,12 +1,9 @@
 import React, { useContext } from 'react';
-import { TerminalContext } from '../../contexts/TerminalContext';
-import { isValueState, isLoading, isReady } from 'util/valueState';
+import { isReady } from 'util/valueState';
 import MessageCentered from 'partials/MessageCentered';
-import { ITerminal } from 'types/Terminal.type';
-
 import styles from './Settings.module.scss';
 import { CamsContext } from 'contexts/CamsContext';
-import { BUTTON_CLASS_NAME } from 'constants/styleConsts';
+import { BUTTON_CLASS_NAME, BUTTON_PERIFERAL } from 'constants/styleConsts';
 
 export default function CamsList() {
 	const { camUuids, selectedCamUuid, setSelectedCamUuid } = useContext(CamsContext);
@@ -17,7 +14,7 @@ export default function CamsList() {
 		<MessageCentered>No cams found</MessageCentered>
 	) : (
 		<div className={styles.terminalList}>
-			<h4 className="grey-text">Available cams id</h4>
+			<h4 className="grey-text text-darken-4">Available cams id</h4>
 
 			{(camUuids as string[]).map((camUuid) => (
 				<ul key={camUuid} className={styles.row}>
@@ -34,7 +31,7 @@ export default function CamsList() {
 				</ul>
 			))}
 
-			<button className={BUTTON_CLASS_NAME}>refresh</button>
+			<button className={BUTTON_PERIFERAL}>refresh</button>
 		</div>
 	);
 }

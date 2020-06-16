@@ -32,10 +32,10 @@ CREATE TABLE Guard (uuid Text NOT NULL,
 CREATE TABLE Office (uuid Text NOT NULL,
                                name Text NOT NULL,
                                          Business_center_id Integer NOT NULL DEFAULT 1 REFERENCES Business_center(id),
-                                                                                                  face_matcher Text UNIQUE DEFAULT NULL,
-                                                                                                                                   open Boolean NOT NULL DEFAULT false,
-                                                                                                                                                                 floor integer UNIQUE NOT NULL,
-                                                                                                                                                                                      PRIMARY KEY (uuid));
+                                                                                                  face_matcher Text DEFAULT NULL,
+                                                                                                                            open Boolean NOT NULL DEFAULT false,
+                                                                                                                                                          floor integer UNIQUE NOT NULL,
+                                                                                                                                                                               PRIMARY KEY (uuid));
 
 ;
 
@@ -56,9 +56,8 @@ CREATE TABLE Worker
                                       last_name Text NOT NULL,
                                                      phone Text NOT NULL UNIQUE,
                                                                          Office_uuid Text NOT NULL REFERENCES Office(uuid) ON DELETE CASCADE ON UPDATE CASCADE,
-                                                                                                                                                       face_descriptor Text NOT NULL UNIQUE,
-                                                                                                                                                                                     PRIMARY KEY (uuid,
-                                                                                                                                                                                                  face_descriptor)) ;
+                                                                                                                                                       face_descriptor Text NOT NULL,
+                                                                                                                                                                            PRIMARY KEY (uuid)) ;
 
 
 CREATE TABLE Terminal
@@ -85,7 +84,7 @@ CREATE TABLE login_event
                                                                   terminal_uuid Text NOT NULL REFERENCES Terminal(uuid) ON DELETE CASCADE ON UPDATE CASCADE,
                                                                                                                                                     success Boolean NOT NULL,
                                                                                                                                                                     PRIMARY KEY (terminal_uuid,
-                                                                                                                                                                                 moment), UNIQUE(face_descriptor, terminal_uuid, moment)) ;
+                                                                                                                                                                                 moment), UNIQUE(terminal_uuid, moment)) ;
 
 ;
 

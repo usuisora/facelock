@@ -1,14 +1,16 @@
 import React, { useState, useContext, FormEvent, ChangeEvent } from 'react';
 import MyDropzone from './Dropzone';
-import { createLabeledDescriptor } from '../../util/faceMatcher';
+// import { createLabeledDescriptor } from '../../util/faceMatcher';
 // @ts-ignore
 import placeholder from '../../media/placeholder.png';
 import { BUTTON_CLASS_NAME } from 'constants/styleConsts';
 import { OfficeContext } from 'contexts/OfficeContext';
 import sha256 from 'sha256';
 import { WorkerContext } from 'contexts/WorkerContext';
-import { IWorkerForm, IWorker } from 'types/Worker.type';
+import { IWorkerForm } from 'types/Worker.type';
 import { getUuid } from 'util/formatUtil';
+import { getFaceDetectionFromBlob } from 'util/faceApiUtil';
+import { OtherLogsContext } from 'contexts/OtherLogsContext';
 
 const formInitValues: IWorkerForm = {
 	name: '',
@@ -18,8 +20,8 @@ const formInitValues: IWorkerForm = {
 };
 
 function WorkerForm() {
-	const { selectedOffice } = useContext(OfficeContext);
-
+	const { selectedOffice, updateOffice } = useContext(OfficeContext);
+	const { postOtherLog } = useContext(OtherLogsContext);
 	const { postWorker } = useContext(WorkerContext);
 
 	const [ imageBlob, setImageBlob ] = useState<string>(placeholder);
@@ -35,30 +37,36 @@ function WorkerForm() {
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const attr = e.target.name;
 		if (attr === 'password') {
-			debugger;
 			setWorkersData({ ...workersData, [attr]: sha256(e.target.value) });
 			return;
 		}
 		setWorkersData({ ...workersData, [attr]: e.target.value });
 	};
 
-	const handleSubmit = (e: FormEvent) => {
+	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
-		debugger;
 		if (!imageBlob || imageBlob === placeholder) {
 			window.alert('Upload the worker image');
 		} else if (workersData.password === sha256('1111')) {
 			const { name, lastName, phone } = workersData;
-			postWorker!({
-				uuid: getUuid(),
-				name,
-				lastName,
-				phone,
-				imageBlob,
-				officeUuid: selectedOffice!.uuid
-			} as IWorker);
-			clearForm();
-			window.alert('Added!');
+			const detection = await getFaceDetectionFromBlob(imageBlob);
+			if (detection) {
+				const newWorker = {
+					uuid: getUuid(),
+					name,
+					last_name: lastName,
+					phone,
+					officeUuid: selectedOffice!.uuid,
+					descriptor: JSON.stringify(detection.descriptor)
+				};
+				postWorker!(newWorker);
+				postOtherLog!(`Registation : worker ID : ${newWorker.uuid}.`);
+				updateOffice!();
+				clearForm();
+				window.alert('Added!');
+			} else {
+				window.alert('Face is not detected!');
+			}
 		} else {
 			setFailed(true);
 		}
@@ -71,11 +79,30 @@ function WorkerForm() {
 			<div className="row">
 				<form className="form col s5  " onSubmit={handleSubmit}>
 					{Object.keys(workersData).map((attr) => {
+						if (attr === 'password') {
+							return (
+								<input
+									key={attr}
+									name={attr}
+									type={attr}
+									placeholder={toCap(attr)}
+									onChange={handleChange}
+									required
+								/>
+							);
+						}
 						return (
-							<input key={attr} name={attr} placeholder={toCap(attr)} onChange={handleChange} required />
+							<input
+								value={workersData[attr]}
+								key={attr}
+								name={attr}
+								placeholder={toCap(attr)}
+								onChange={handleChange}
+								required
+							/>
 						);
 					})}
-					<MyDropzone setPreview={setImageBlob} />;
+					<MyDropzone setPreview={setImageBlob} />
 					<button className={BUTTON_CLASS_NAME}>Add</button>
 					{failed && <p className=" red-text">Password wrong!</p>}
 				</form>

@@ -1,14 +1,18 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
 import * as faceapi from 'face-api.js';
 import MessageCentered from 'partials/MessageCentered';
-import {  getFaceDetection } from 'util/faceApiUtil';
+import {  getFaceDetectionFromStream } from 'util/faceApiUtil';
 
-import styles from './Terminal.module.scss';
 import { FaceApiContext } from 'contexts/FaceApiContext';
 import { displaySize } from 'constants/faceApiConst';
 import { useLocation } from 'react-router-dom';
-import { BUTTON_CLASS_NAME } from 'constants/styleConsts';
+import { BUTTON_CLASS_NAME, BUTTON_PERIFERAL } from 'constants/styleConsts';
 import { OfficeContext } from 'contexts/OfficeContext';
+
+import styles from './Terminal.module.scss';
+import { AuthLogsContext } from 'contexts/AuthLogsContext';
+import { IWorker } from 'types/Worker.type';
+
 const getStreamByCamUuid = (camUuid: string): Promise<MediaStream> =>
 	navigator.mediaDevices.getUserMedia({
 		video: {
@@ -34,15 +38,20 @@ type Detection =
 	| undefined;
 
 const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
+
 	const { modelsLoaded } = useContext(FaceApiContext);
-	const { isFaceMatchFound } = useContext(OfficeContext);
+
+	const { getWorkerByFaceMatch } = useContext(OfficeContext);
+	const { postAuthLog } = useContext(AuthLogsContext);
+
 	const location = useLocation()
+
 	const [ mediaStream, setMediaStream ] = useState<MediaStream | null>(null);
 	const [ detection, setDetection ] = useState<Detection>();
 	const [ faceClose, setFaceClose ] = useState<boolean>(false);
+
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasPicWebCam = useRef<HTMLCanvasElement>(null);
-
 	const enableStream = async () => {
 		try {
 			if (camUuid) {
@@ -57,14 +66,13 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 	const handlePlay = () => {
 		faceapi.matchDimensions(canvasPicWebCam.current as faceapi.IDimensions, displaySize);
 		setInterval(async () => {
-			videoRef.current && setDetection(await getFaceDetection(videoRef.current,));
+			videoRef.current && setDetection(await getFaceDetectionFromStream(videoRef.current));
 		}, 100);
 	};
 
 	const drawDetections = () => {
 		const canvas = canvasPicWebCam.current;
 		if (detection && canvas) {
-		
 				setFaceClose(true);
 				const resizedDetection = faceapi.resizeResults(detection, displaySize);
 				//@ts-ignore
@@ -89,18 +97,26 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 				}
 			}
 		},
-		[ detection ]
+		[ detection , drawDetections]
 	);
-
-	const handleApprove  = () =>{
-		detection?.descriptor ? isFaceMatchFound!(detection?.descriptor) : window.alert("No face detected!");
+		const showResults = ( worker : IWorker | null ) => 
+		worker ? window.alert('Wellcome '+worker.name+' '+worker.last_name) : window.alert('You are unknown! Closed')
+	
+		const handleApprove  = async () => {
+		if(detection?.descriptor) 
+		{ const worker = await  getWorkerByFaceMatch!(detection?.descriptor)
+			 postAuthLog!(detection?.descriptor, !!worker)
+			 showResults(worker)
+		} 
+		 else 
+		 {window.alert("No face detected!")};
 	}
 
 	useEffect(
 		() => {
-			if (!mediaStream ) {
+			if ( modelsLoaded && videoRef.current && !mediaStream ) {
 				enableStream();
-			} else if (mediaStream && videoRef.current ) {
+			} else if (modelsLoaded && mediaStream && videoRef.current ) {
 				videoRef.current.srcObject = mediaStream;
 			} 
 		},
@@ -135,8 +151,8 @@ const Camera: React.FC<IOuterProps> = ({ camUuid }) => {
 						className="center"
 					/>
 					<canvas className="center" ref={canvasPicWebCam} />
-					{!faceClose && <h5 className="yellow">Stay closer to terminal</h5>}
 					<button className={BUTTON_CLASS_NAME} onClick={handleApprove}>Approve</button>
+					{!faceClose && <h5 className={styles.message}>Stay closer to terminal</h5>}
 				</div>
 			)}
 		</div>
