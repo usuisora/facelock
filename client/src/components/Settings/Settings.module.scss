@@ -1,0 +1,22 @@
+.setting {
+	margin: 0 40px;
+}
+
+.row {
+	display: flex;
+	min-height: 32px;
+}
+
+.left {
+	flex: 4;
+	display: flex;
+	margin: auto 0;
+	* {
+		flex: 1;
+		margin: auto 0;
+	}
+}
+
+.action {
+	flex: 1;
+}
