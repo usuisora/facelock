@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { IOtherLog } from 'types/otherLog.type';
+import { IOtherLog } from 'types/OtherLog.type';
 import { IValueState, notLoadedState, loadingState, errorState, isValueState, isReady } from 'util/valueState';
 import { ApiUrl } from 'constants/apiEndpoints';
 import { getData, postData } from '../modules/api';
